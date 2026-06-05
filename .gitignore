@@ -1,0 +1,31 @@
+# Data & output (never commit downloaded content or local DB)
+/data/
+/downloads/
+/wallpapers/*
+!/wallpapers/.gitkeep
+
+# Secrets / local config
+.env
+config.local.toml
+*.secret
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Local Claude Code / harness settings
+.claude/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
