@@ -20,6 +20,7 @@ from sqlalchemy import select
 from app.config import ROOT, load_config
 from app.db import Bookmark, DownloadJob, get_session, init_db
 from app.providers.mangadex import MangaDexProvider
+from app.services.updates import check_all, record_seen, set_baseline
 from app.web.queue import DownloadManager
 
 WEB_DIR = Path(__file__).resolve().parent
@@ -81,9 +82,23 @@ async def home(request: Request):
 
 @app.get("/library", response_class=HTMLResponse)
 async def library_page(request: Request):
+    return TEMPLATES.TemplateResponse(request, "library.html", {"library": _library_rows()})
+
+
+@app.post("/library/check-all", response_class=HTMLResponse)
+async def library_check_all(request: Request):
+    await check_all(app.state.provider, language=app.state.cfg.language)
+    return TEMPLATES.TemplateResponse(
+        request, "partials/_library_grid.html", {"library": _library_rows()}
+    )
+
+
+def _library_rows():
     with get_session() as s:
-        library = s.execute(select(Bookmark).order_by(Bookmark.created_at.desc())).scalars().all()
-    return TEMPLATES.TemplateResponse(request, "library.html", {"library": library})
+        # Show manga with new chapters first, then most recently added.
+        return s.execute(
+            select(Bookmark).order_by(Bookmark.unread.desc(), Bookmark.created_at.desc())
+        ).scalars().all()
 
 
 @app.get("/browse", response_class=HTMLResponse)
@@ -116,12 +131,17 @@ async def manga_detail(request: Request, provider_id: str, external_id: str):
     provider = app.state.provider
     detail = await provider.get_manga(external_id)
     chapters = await provider.get_chapters(external_id, language=app.state.cfg.language)
+    is_bookmarked = external_id in _bookmarked_ids()
+    # Opening the manga counts as catching up: clear its unread badge.
+    if is_bookmarked:
+        latest = max((c.number_sort for c in chapters), default=0.0)
+        record_seen(external_id, latest, len(chapters))
     return TEMPLATES.TemplateResponse(
         request, "manga.html",
         {
             "manga": detail,
             "chapters": chapters,
-            "bookmarked": external_id in _bookmarked_ids(),
+            "bookmarked": is_bookmarked,
         },
     )
 
@@ -136,6 +156,7 @@ async def library_add(
     title: str = Form(...),
     cover_url: str = Form(""),
 ):
+    newly_added = False
     with get_session() as s:
         exists = s.execute(
             select(Bookmark).where(Bookmark.external_id == external_id)
@@ -145,6 +166,13 @@ async def library_add(
                 provider_id=provider_id, external_id=external_id,
                 title=title, cover_url=cover_url or None,
             ))
+            newly_added = True
+    # Baseline the chapter count so only future releases register as unread.
+    if newly_added:
+        try:
+            await set_baseline(app.state.provider, external_id, language=app.state.cfg.language)
+        except Exception:
+            pass
     return _bookmark_button(request, provider_id, external_id, title, cover_url, True)
 
 

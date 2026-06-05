@@ -1,0 +1,28 @@
+{# Library grid. Swapped in by /library/check-all (hx-target #library-grid). #}
+<div id="library-grid" class="cards">
+  {% for m in library %}
+    <article class="card">
+      <a href="/manga/{{ m.provider_id }}/{{ m.external_id }}" class="card-cover">
+        {% if m.unread and m.unread > 0 %}
+          <span class="badge-new">{{ m.unread }} new</span>
+        {% endif %}
+        {% if m.cover_url %}<img loading="lazy" src="/cover?url={{ m.cover_url|urlencode }}" alt="">{% endif %}
+      </a>
+      <div class="card-body">
+        <a class="card-title" href="/manga/{{ m.provider_id }}/{{ m.external_id }}">{{ m.title }}</a>
+        <div class="card-foot">
+          <span class="ch-count">{{ m.total_chapters }} ch</span>
+          <form hx-post="/library/remove" hx-target="closest .card" hx-swap="outerHTML">
+            <input type="hidden" name="provider_id" value="{{ m.provider_id }}">
+            <input type="hidden" name="external_id" value="{{ m.external_id }}">
+            <input type="hidden" name="title" value="{{ m.title }}">
+            <input type="hidden" name="source" value="grid">
+            <button class="btn btn-ghost btn-sm" type="submit">Remove</button>
+          </form>
+        </div>
+      </div>
+    </article>
+  {% else %}
+    <p class="hint">No bookmarks yet. Head to <a href="/">Discover</a>, find something, and tap ☆.</p>
+  {% endfor %}
+</div>

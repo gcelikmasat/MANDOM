@@ -12,7 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from sqlalchemy import String, Text, create_engine
+from sqlalchemy import String, Text, create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 _engine = None
@@ -36,8 +36,14 @@ class Bookmark(Base):
     title: Mapped[str] = mapped_column(String(300))
     cover_url: Mapped[str | None] = mapped_column(Text, default=None)
     status: Mapped[str | None] = mapped_column(String(40), default=None)
-    # Highest chapter number we've seen, for new-chapter detection (Phase 3+).
+    # New-chapter detection: last_seen_sort is the high-water mark the user has
+    # "seen"; latest_sort/total_chapters come from the most recent feed check;
+    # unread = chapters newer than last_seen_sort.
     last_seen_sort: Mapped[float] = mapped_column(default=0.0)
+    latest_sort: Mapped[float] = mapped_column(default=0.0)
+    total_chapters: Mapped[int] = mapped_column(default=0)
+    unread: Mapped[int] = mapped_column(default=0)
+    last_checked: Mapped[dt.datetime | None] = mapped_column(default=None)
     created_at: Mapped[dt.datetime] = mapped_column(default=_now)
 
 
@@ -70,6 +76,27 @@ def init_db(data_dir: Path) -> None:
     )
     _SessionFactory = sessionmaker(bind=_engine, expire_on_commit=False)
     Base.metadata.create_all(_engine)
+    _migrate(_engine)
+
+
+def _migrate(engine) -> None:
+    """Add any columns missing from an older DB (SQLite has no DDL migrations).
+
+    Keeps a user's existing bookmarks instead of forcing a DB wipe when the
+    schema grows. Only handles additive column changes, which is all we need.
+    """
+    inspector = inspect(engine)
+    existing = {c["name"] for c in inspector.get_columns("bookmark")}
+    additions = {
+        "latest_sort": "FLOAT NOT NULL DEFAULT 0",
+        "total_chapters": "INTEGER NOT NULL DEFAULT 0",
+        "unread": "INTEGER NOT NULL DEFAULT 0",
+        "last_checked": "DATETIME",
+    }
+    with engine.begin() as conn:
+        for name, ddl in additions.items():
+            if name not in existing:
+                conn.execute(text(f"ALTER TABLE bookmark ADD COLUMN {name} {ddl}"))
 
 
 @contextmanager

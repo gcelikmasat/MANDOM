@@ -1,6 +1,6 @@
 # Mandom
 
-> *pull manga into your world*
+> _manga downloader app_
 
 Personal-use manga downloader. Pulls **English** chapters from provider APIs
 (**MangaDex** first), and exports reader-ready files. Built to reliably do what

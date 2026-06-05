@@ -3,28 +3,16 @@
 {% block content %}
 
 <section class="panel glass">
-  <h2>Your Library <span class="count">{{ library|length }}</span></h2>
-  <div id="library-grid" class="cards">
-    {% for m in library %}
-      <article class="card">
-        <a href="/manga/{{ m.provider_id }}/{{ m.external_id }}" class="card-cover">
-          {% if m.cover_url %}<img loading="lazy" src="/cover?url={{ m.cover_url|urlencode }}" alt="">{% endif %}
-        </a>
-        <div class="card-body">
-          <a class="card-title" href="/manga/{{ m.provider_id }}/{{ m.external_id }}">{{ m.title }}</a>
-          <form hx-post="/library/remove" hx-target="closest .card" hx-swap="outerHTML">
-            <input type="hidden" name="provider_id" value="{{ m.provider_id }}">
-            <input type="hidden" name="external_id" value="{{ m.external_id }}">
-            <input type="hidden" name="title" value="{{ m.title }}">
-            <input type="hidden" name="source" value="grid">
-            <button class="btn btn-ghost" type="submit">Remove</button>
-          </form>
-        </div>
-      </article>
-    {% else %}
-      <p class="hint">No bookmarks yet. Head to <a href="/">Discover</a>, find something, and tap ☆.</p>
-    {% endfor %}
+  <div class="panel-head">
+    <h2>Your Library <span class="count">{{ library|length }}</span></h2>
+    <button class="btn btn-primary btn-sm"
+            hx-post="/library/check-all"
+            hx-target="#library-grid"
+            hx-swap="outerHTML"
+            hx-indicator="#check-spin">↻ Update all</button>
+    <span id="check-spin" class="spin htmx-indicator">checking for new chapters&hellip;</span>
   </div>
+  {% include "partials/_library_grid.html" %}
 </section>
 
 <section class="panel glass">
