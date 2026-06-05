@@ -48,13 +48,30 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 22px;
 }
-.brand { text-decoration: none; color: var(--ink); display: flex; flex-direction: column; line-height: 1; }
+.brand { text-decoration: none; color: var(--ink); display: flex; flex-direction: column; line-height: 1; flex: 0 0 auto; }
 .brand-mark {
   font-weight: 800; letter-spacing: 4px; font-size: 22px;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: 4px; }
+.brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: 4px; white-space: nowrap; }
+
+/* Pochita mascot: monospace + tight line-height so the Braille art renders true. */
+.brand-art {
+  flex: 1 1 auto;
+  margin: 0;
+  text-align: center;
+  font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+  font-size: 7px;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--accent);
+  opacity: 0.7;
+  user-select: none;
+  overflow: hidden;
+}
+
+nav { flex: 0 0 auto; display: flex; gap: 16px; }
 .nav-link { color: var(--muted); text-decoration: none; font-size: 14px; }
 .nav-link:hover { color: var(--ink); }
 
@@ -139,6 +156,7 @@ h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap:
 .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .3s ease; }
 
 @media (max-width: 720px) {
+  .brand-art { display: none; }
   .detail { grid-template-columns: 1fr; }
   .chapter-row { grid-template-columns: 50px 1fr 44px; }
   .ch-group, .ch-pages { display: none; }
