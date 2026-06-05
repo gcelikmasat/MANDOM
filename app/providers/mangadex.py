@@ -201,13 +201,7 @@ class MangaDexProvider:
     # ---- Parsing helpers -------------------------------------------------
 
     def _to_summary(self, item: dict) -> MangaSummary:
-        attrs = item.get("attributes", {})
-        return MangaSummary(
-            provider_id=self.id,
-            external_id=item["id"],
-            title=_pick_lang(attrs.get("title", {})),
-            cover_url=self._cover_url(item),
-        )
+        return summary_from_item(item)
 
     def _to_chapter(self, item: dict) -> ChapterInfo | None:
         attrs = item.get("attributes", {})
@@ -237,12 +231,27 @@ class MangaDexProvider:
         )
 
     def _cover_url(self, item: dict) -> str | None:
-        for rel in item.get("relationships", []):
-            if rel.get("type") == "cover_art":
-                file_name = rel.get("attributes", {}).get("fileName")
-                if file_name:
-                    return f"{UPLOADS_BASE}/covers/{item['id']}/{file_name}"
-        return None
+        return cover_url_from_item(item)
+
+
+def cover_url_from_item(item: dict) -> str | None:
+    for rel in item.get("relationships", []):
+        if rel.get("type") == "cover_art":
+            file_name = rel.get("attributes", {}).get("fileName")
+            if file_name:
+                return f"{UPLOADS_BASE}/covers/{item['id']}/{file_name}"
+    return None
+
+
+def summary_from_item(item: dict) -> MangaSummary:
+    """Build a MangaSummary from a raw /manga item (shared by search & follows sync)."""
+    attrs = item.get("attributes", {})
+    return MangaSummary(
+        provider_id="mangadex",
+        external_id=item["id"],
+        title=_pick_lang(attrs.get("title", {})),
+        cover_url=cover_url_from_item(item),
+    )
 
 
 def _pick_lang(localized: dict, prefer: str = "en") -> str:

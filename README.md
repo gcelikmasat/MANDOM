@@ -13,10 +13,14 @@ HakuNeko did, without the scraping fragility — and to ship clean files to a
 ## Status
 
 - **Phase 1 (CLI)** ✅ search → list English chapters → download → CBZ.
-- **Phase 2 (web UI)** ✅ FastAPI + HTMX: search with covers, local bookmarks,
-  manga detail with chapter list, background download queue with live progress,
-  shuffling wallpaper background.
-- Next: bookmark new-chapter detection, MangaDex account sync, KEPUB export, in-app reader.
+- **Phase 2 (web UI)** ✅ FastAPI + HTMX: Discover/browse, search with covers,
+  local bookmarks, manga detail + chapter list, background download queue with
+  live progress, shuffling wallpaper background.
+- **Phase 3 (new-chapter detection)** ✅ "Update all" re-polls bookmarks; unread
+  badges; opening a manga marks it caught up.
+- **Phase 4 (MangaDex account sync)** ✅ OAuth2 personal-client login (creds in
+  the OS keychain), import your follows into the library.
+- Next: KEPUB export for Kobo, in-app reader.
 
 ## Setup
 

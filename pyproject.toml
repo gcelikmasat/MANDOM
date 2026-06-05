@@ -16,6 +16,7 @@ web = [
     "jinja2>=3.1",
     "python-multipart>=0.0.9",
     "sqlalchemy>=2.0",
+    "keyring>=24.0",        # store MangaDex creds in the OS keychain, not plaintext
 ]
 # KEPUB image processing (Phase 5).
 export = ["pillow>=10.0"]

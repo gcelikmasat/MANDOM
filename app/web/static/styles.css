@@ -173,6 +173,20 @@ h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap:
 .bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
 .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .3s ease; }
 
+/* account / login */
+.login-form { display: grid; gap: 14px; max-width: 420px; margin-top: 16px; }
+.login-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+.login-form input {
+  padding: 11px 14px; font-size: 14px; color: var(--ink);
+  background: rgba(0,0,0,0.35); border: 1px solid var(--line); border-radius: 10px; outline: none;
+}
+.login-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,90,95,0.16); }
+.login-actions { display: flex; align-items: center; gap: 10px; }
+.signed-in { font-size: 15px; margin: 6px 0 14px; }
+.notice { font-size: 14px; border-radius: 10px; padding: 10px 14px; margin: 0 0 14px; }
+.notice.ok { background: rgba(92,224,138,0.12); border: 1px solid rgba(92,224,138,0.35); color: #b8f0cb; }
+.notice.err { background: rgba(255,90,95,0.12); border: 1px solid rgba(255,90,95,0.4); color: #ffc2c4; }
+
 @media (max-width: 720px) {
   .brand-art-wrap { display: none; }
   .detail { grid-template-columns: 1fr; }

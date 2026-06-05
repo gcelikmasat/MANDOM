@@ -7,6 +7,7 @@ progress. A shuffling wallpaper background reads from the ``wallpapers/`` folder
 
 from __future__ import annotations
 
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -19,6 +20,7 @@ from sqlalchemy import select
 
 from app.config import ROOT, load_config
 from app.db import Bookmark, DownloadJob, get_session, init_db
+from app.providers import mangadex_auth as auth
 from app.providers.mangadex import MangaDexProvider
 from app.services.updates import check_all, record_seen, set_baseline
 from app.web.queue import DownloadManager
@@ -99,6 +101,95 @@ def _library_rows():
         return s.execute(
             select(Bookmark).order_by(Bookmark.unread.desc(), Bookmark.created_at.desc())
         ).scalars().all()
+
+
+# ---- account (MangaDex login + follows sync) ----------------------------
+
+def _account_ctx(message: str | None = None, error: str | None = None) -> dict:
+    return {
+        "logged_in": auth.is_logged_in(),
+        "username": auth.username(),
+        "message": message,
+        "error": error,
+    }
+
+
+@app.get("/account", response_class=HTMLResponse)
+async def account_page(request: Request):
+    return TEMPLATES.TemplateResponse(request, "account.html", _account_ctx())
+
+
+@app.post("/account/login", response_class=HTMLResponse)
+async def account_login(
+    request: Request,
+    client_id: str = Form(...),
+    client_secret: str = Form(...),
+    username: str = Form(...),
+    password: str = Form(...),
+):
+    try:
+        await auth.login(
+            client_id.strip(), client_secret.strip(), username.strip(), password,
+            user_agent=app.state.cfg.user_agent,
+        )
+        ctx = _account_ctx(message="Signed in. You can now sync your MangaDex follows.")
+    except auth.AuthError as exc:
+        ctx = _account_ctx(error=str(exc))
+    return TEMPLATES.TemplateResponse(request, "partials/_account_panel.html", ctx)
+
+
+@app.post("/account/logout", response_class=HTMLResponse)
+async def account_logout(request: Request):
+    auth.logout()
+    return TEMPLATES.TemplateResponse(
+        request, "partials/_account_panel.html", _account_ctx(message="Signed out.")
+    )
+
+
+@app.post("/account/sync", response_class=HTMLResponse)
+async def account_sync(request: Request):
+    token = await auth.get_access_token(user_agent=app.state.cfg.user_agent)
+    if not token:
+        return TEMPLATES.TemplateResponse(
+            request, "partials/_account_panel.html",
+            _account_ctx(error="Session expired - please sign in again."),
+        )
+    follows = await auth.fetch_follows(token, user_agent=app.state.cfg.user_agent)
+    added = _import_follows(follows)
+    if added:
+        asyncio.create_task(_baseline_follows(added))
+    if added:
+        msg = (
+            f"Imported {len(follows)} follow(s); {len(added)} new added to your library. "
+            "Baselining their chapter counts in the background…"
+        )
+    else:
+        msg = f"All {len(follows)} follow(s) are already in your library."
+    return TEMPLATES.TemplateResponse(
+        request, "partials/_account_panel.html", _account_ctx(message=msg)
+    )
+
+
+def _import_follows(follows) -> list[str]:
+    added: list[str] = []
+    with get_session() as s:
+        existing = set(s.execute(select(Bookmark.external_id)).scalars().all())
+        for m in follows:
+            if m.external_id not in existing:
+                s.add(Bookmark(
+                    provider_id=m.provider_id, external_id=m.external_id,
+                    title=m.title, cover_url=m.cover_url,
+                ))
+                added.append(m.external_id)
+    return added
+
+
+async def _baseline_follows(external_ids: list[str]) -> None:
+    for eid in external_ids:
+        try:
+            await set_baseline(app.state.provider, eid, language=app.state.cfg.language)
+        except Exception:
+            pass
 
 
 @app.get("/browse", response_class=HTMLResponse)

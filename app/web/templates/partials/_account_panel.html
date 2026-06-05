@@ -1,0 +1,28 @@
+{# Account state. Expects logged_in, username, message, error. #}
+{% if message %}<p class="notice ok">{{ message }}</p>{% endif %}
+{% if error %}<p class="notice err">{{ error }}</p>{% endif %}
+
+{% if logged_in %}
+  <p class="signed-in">Signed in as <strong>{{ username or "your account" }}</strong>.</p>
+  <div class="detail-actions">
+    <form hx-post="/account/sync" hx-target="#account-panel" hx-swap="innerHTML" hx-indicator="#sync-spin">
+      <button class="btn btn-primary" type="submit">⟳ Sync follows → Library</button>
+    </form>
+    <span id="sync-spin" class="spin htmx-indicator">syncing&hellip;</span>
+    <form hx-post="/account/logout" hx-target="#account-panel" hx-swap="innerHTML">
+      <button class="btn btn-ghost" type="submit">Log out</button>
+    </form>
+  </div>
+{% else %}
+  <form class="login-form" hx-post="/account/login" hx-target="#account-panel" hx-swap="innerHTML"
+        hx-indicator="#login-spin" hx-disabled-elt="find button">
+    <label>Client ID<input name="client_id" required autocomplete="off"></label>
+    <label>Client Secret<input name="client_secret" type="password" required autocomplete="off"></label>
+    <label>Username<input name="username" required autocomplete="off"></label>
+    <label>Password<input name="password" type="password" required autocomplete="off"></label>
+    <div class="login-actions">
+      <button class="btn btn-primary" type="submit">Sign in</button>
+      <span id="login-spin" class="spin htmx-indicator">signing in&hellip;</span>
+    </div>
+  </form>
+{% endif %}

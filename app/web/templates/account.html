@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Account — Mandom{% endblock %}
+{% block content %}
+
+<section class="panel glass">
+  <h2>MangaDex Account</h2>
+  <p class="hint">
+    Sign in with a MangaDex <strong>personal API client</strong> to import your follows into your library.
+    Create one at
+    <a href="https://mangadex.org/settings" target="_blank" rel="noopener">mangadex.org → Settings → API Clients</a>
+    (newly created clients need approval, which can take a little while).
+    Credentials are stored in your OS keychain — never in plaintext or in this repo, and your
+    password is used only once at sign-in, then discarded.
+  </p>
+  <div id="account-panel">
+    {% include "partials/_account_panel.html" %}
+  </div>
+</section>
+
+{% endblock %}
