@@ -1,0 +1,10 @@
+{# A grid of manga cards. Expects `results`, `bookmarked`, and `empty` message. #}
+{% if not results %}
+  <p class="hint">{{ empty or "Nothing here." }}</p>
+{% else %}
+  <div class="cards">
+    {% for m in results %}
+      {% include "partials/_manga_card.html" %}
+    {% endfor %}
+  </div>
+{% endif %}

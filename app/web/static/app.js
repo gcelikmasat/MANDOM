@@ -1,3 +1,9 @@
+// Browse tab active-state toggle.
+function setActive(btn) {
+  btn.parentElement.querySelectorAll(".chip").forEach((c) => c.classList.remove("is-active"));
+  btn.classList.add("is-active");
+}
+
 // Shuffling wallpaper background. Drop images into the project's wallpapers/
 // folder and they rotate here. Falls back to the CSS gradient if empty.
 (function () {

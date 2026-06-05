@@ -1,21 +1,6 @@
 {% extends "base.html" %}
+{% block title %}Library — Mandom{% endblock %}
 {% block content %}
-
-<section class="hero glass">
-  <h1>Find a manga</h1>
-  <input
-    class="search"
-    type="search"
-    name="q"
-    placeholder="Search MangaDex&hellip;  (e.g. berserk, vinland saga)"
-    autocomplete="off"
-    hx-get="/search"
-    hx-trigger="keyup changed delay:400ms, search"
-    hx-target="#results"
-    hx-indicator="#search-spin">
-  <span id="search-spin" class="spin htmx-indicator">searching&hellip;</span>
-  <div id="results" class="cards"></div>
-</section>
 
 <section class="panel glass">
   <h2>Your Library <span class="count">{{ library|length }}</span></h2>
@@ -37,7 +22,7 @@
         </div>
       </article>
     {% else %}
-      <p class="hint">No bookmarks yet. Search above and tap the star to save one.</p>
+      <p class="hint">No bookmarks yet. Head to <a href="/">Discover</a>, find something, and tap ☆.</p>
     {% endfor %}
   </div>
 </section>

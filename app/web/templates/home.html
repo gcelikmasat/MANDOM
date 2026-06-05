@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero glass">
+  <h1>Discover</h1>
+  <input
+    class="search"
+    type="search"
+    name="q"
+    placeholder="Search MangaDex&hellip;  (e.g. berserk, vinland saga)"
+    autocomplete="off"
+    hx-get="/search"
+    hx-trigger="keyup changed delay:400ms, search"
+    hx-target="#results"
+    hx-indicator="#search-spin">
+  <span id="search-spin" class="spin htmx-indicator">searching&hellip;</span>
+  <div id="results"></div>
+</section>
+
+<section class="panel glass">
+  <div class="panel-head">
+    <h2>Browse</h2>
+    <div class="tabs" role="tablist">
+      <button class="chip is-active" hx-get="/browse?sort=popular" hx-target="#browse-grid"
+              onclick="setActive(this)">Popular</button>
+      <button class="chip" hx-get="/browse?sort=latest" hx-target="#browse-grid"
+              onclick="setActive(this)">Latest</button>
+      <button class="chip" hx-get="/browse?sort=rating" hx-target="#browse-grid"
+              onclick="setActive(this)">Top Rated</button>
+    </div>
+  </div>
+  <div id="browse-grid" hx-get="/browse?sort=popular" hx-trigger="load"
+       hx-indicator="#browse-spin">
+    <span id="browse-spin" class="spin htmx-indicator">loading&hellip;</span>
+  </div>
+</section>
+
+{% endblock %}

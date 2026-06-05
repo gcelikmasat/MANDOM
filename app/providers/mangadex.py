@@ -22,8 +22,17 @@ from app.services.ratelimit import RateLimiter
 API_BASE = "https://api.mangadex.org"
 UPLOADS_BASE = "https://uploads.mangadex.org"
 
-# Include every rating so anything the user legitimately reads is findable.
+# Include every rating so anything the user legitimately reads is findable via search.
 CONTENT_RATINGS = ["safe", "suggestive", "erotica", "pornographic"]
+# The browsable home shelf stays a bit tamer than raw search.
+BROWSE_RATINGS = ["safe", "suggestive", "erotica"]
+
+# Sort options for the home/discover shelf -> MangaDex order params.
+BROWSE_ORDERS = {
+    "popular": ("followedCount", "desc"),
+    "latest": ("latestUploadedChapter", "desc"),
+    "rating": ("rating", "desc"),
+}
 
 _RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
@@ -98,6 +107,25 @@ class MangaDexProvider:
                 "contentRating[]": CONTENT_RATINGS,
                 "availableTranslatedLanguage[]": [language],
                 "order[relevance]": "desc",
+            },
+        )
+        return [self._to_summary(item) for item in data.get("data", [])]
+
+    async def browse(
+        self, *, sort: str = "popular", language: str = "en", limit: int = 32, offset: int = 0
+    ) -> list[MangaSummary]:
+        """A discover shelf: top manga by popularity / recency / rating."""
+        field, direction = BROWSE_ORDERS.get(sort, BROWSE_ORDERS["popular"])
+        data = await self._get(
+            "/manga",
+            {
+                "limit": limit,
+                "offset": offset,
+                "includes[]": ["cover_art"],
+                "contentRating[]": BROWSE_RATINGS,
+                "availableTranslatedLanguage[]": [language],
+                "hasAvailableChapters": "true",
+                f"order[{field}]": direction,
             },
         )
         return [self._to_summary(item) for item in data.get("data", [])]

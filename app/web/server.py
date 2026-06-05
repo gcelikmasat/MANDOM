@@ -75,11 +75,26 @@ def _bookmarked_ids() -> set[str]:
 # ---- pages ---------------------------------------------------------------
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
+async def home(request: Request):
+    return TEMPLATES.TemplateResponse(request, "home.html", {})
+
+
+@app.get("/library", response_class=HTMLResponse)
+async def library_page(request: Request):
     with get_session() as s:
         library = s.execute(select(Bookmark).order_by(Bookmark.created_at.desc())).scalars().all()
+    return TEMPLATES.TemplateResponse(request, "library.html", {"library": library})
+
+
+@app.get("/browse", response_class=HTMLResponse)
+async def browse(request: Request, sort: str = "popular"):
+    results = await app.state.provider.browse(
+        sort=sort, language=app.state.cfg.language, limit=32
+    )
     return TEMPLATES.TemplateResponse(
-        request, "index.html", {"library": library}
+        request, "partials/_grid.html",
+        {"results": results, "bookmarked": _bookmarked_ids(),
+         "empty": "Nothing to show right now."},
     )
 
 
@@ -87,11 +102,12 @@ async def index(request: Request):
 async def search(request: Request, q: str = ""):
     q = q.strip()
     if not q:
-        return HTMLResponse('<p class="hint">Type a title and hit search.</p>')
+        return HTMLResponse("")
     results = await app.state.provider.search(q, language=app.state.cfg.language, limit=18)
     return TEMPLATES.TemplateResponse(
-        request, "partials/_results.html",
-        {"results": results, "bookmarked": _bookmarked_ids()},
+        request, "partials/_grid.html",
+        {"results": results, "bookmarked": _bookmarked_ids(),
+         "empty": "No results. Try another title."},
     )
 
 
