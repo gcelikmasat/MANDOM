@@ -24,7 +24,7 @@ from app.config import Config, load_config
 from app.providers.base import ChapterInfo, MangaDetail
 from app.providers.mangadex import MangaDexProvider
 from app.services.downloader import download_chapter
-from app.services.export import build_cbz
+from app.services.export import build_exports
 from app.services.naming import pad_number, render_filename, safe_filename, slugify
 
 
@@ -123,9 +123,16 @@ async def _download_one(
     stem = render_filename(
         cfg.filename_template, ch, manga_title=detail.title, padding=cfg.number_padding
     )
-    out_path = out_dir / f"{stem}.cbz"
-    build_cbz(images, out_path)
-    print(f"  -> {out_path.name}")
+    primary = build_exports(
+        images, out_dir, stem,
+        export_format=cfg.export_format,
+        manga_title=detail.title,
+        chapter_label=ch.number or "0",
+        profile=cfg.profile(),
+        language=cfg.language,
+        direction=cfg.reading_direction,
+    )
+    print(f"  -> {primary.name if primary else '(nothing produced)'}")
 
 
 def _select_chapters(

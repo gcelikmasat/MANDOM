@@ -50,6 +50,15 @@ class Config:
     # Bundling: per-chapter is the default; volume bundling is an optional toggle.
     bundling: str = "chapter"  # "chapter" | "volume"
 
+    # Export format(s) produced per chapter.
+    #   "kepub" -> Kobo-optimized fixed-layout .kepub.epub (default; best on the Clara Colour)
+    #   "cbz"   -> plain comic zip
+    #   "both"  -> emit both
+    export_format: str = "kepub"
+    # Reading direction for the EPUB. Manga is right-to-left; set "ltr" for
+    # webtoons / manhwa.
+    reading_direction: str = "rtl"  # "rtl" | "ltr"
+
     # Download politeness.
     max_concurrency: int = 4
     requests_per_second: float = 4.0  # stay under MangaDex's ~5 req/s global ceiling

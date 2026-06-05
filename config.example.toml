@@ -15,6 +15,15 @@
 # "chapter" (default, one book per chapter) or "volume".
 # bundling = "chapter"
 
+# Export format per chapter:
+#   "kepub" (default) -> Kobo-optimized fixed-layout .kepub.epub
+#   "cbz"             -> plain comic zip
+#   "both"            -> emit both
+# export_format = "kepub"
+
+# Reading direction in the EPUB. "rtl" for manga (default), "ltr" for webtoons/manhwa.
+# reading_direction = "rtl"
+
 # Download politeness — stay under MangaDex's ~5 req/s global ceiling.
 # max_concurrency = 4
 # requests_per_second = 4.0

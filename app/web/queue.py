@@ -15,7 +15,7 @@ from app.config import Config
 from app.db import DownloadJob, get_session
 from app.providers.mangadex import MangaDexProvider
 from app.services.downloader import download_chapter
-from app.services.export import build_cbz
+from app.services.export import build_exports
 from app.services.naming import pad_number, render_filename, safe_filename, slugify
 
 
@@ -96,9 +96,19 @@ class DownloadManager:
             self._cfg.filename_template, ch,
             manga_title=data["manga_title"], padding=self._cfg.number_padding,
         )
-        out_path = self._cfg.export_dir / safe_filename(data["manga_title"]) / f"{stem}.cbz"
-        build_cbz(images, out_path)
-        _update(job_id, state="done", out_path=str(out_path))
+        out_dir = self._cfg.export_dir / safe_filename(data["manga_title"])
+        # CPU-bound (Pillow) -> run off the event loop.
+        primary = await asyncio.to_thread(
+            build_exports,
+            images, out_dir, stem,
+            export_format=self._cfg.export_format,
+            manga_title=data["manga_title"],
+            chapter_label=data["chapter_label"],
+            profile=self._cfg.profile(),
+            language=self._cfg.language,
+            direction=self._cfg.reading_direction,
+        )
+        _update(job_id, state="done", out_path=str(primary) if primary else None)
 
 
 def _update(job_id: int, **fields) -> None:

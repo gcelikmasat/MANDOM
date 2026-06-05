@@ -20,7 +20,10 @@ HakuNeko did, without the scraping fragility — and to ship clean files to a
   badges; opening a manga marks it caught up.
 - **Phase 4 (MangaDex account sync)** ✅ OAuth2 personal-client login (creds in
   the OS keychain), import your follows into the library.
-- Next: KEPUB export for Kobo, in-app reader.
+- **Phase 5 (Kobo KEPUB export)** ✅ fixed-layout, device-sized `.kepub.epub`
+  with embedded series metadata (auto-sorts on the Kobo), RTL, per-chapter.
+  Set `export_format` to `kepub` (default), `cbz`, or `both`.
+- Next: "send to Kobo" (auto-copy to the mounted device), in-app reader.
 
 ## Setup
 

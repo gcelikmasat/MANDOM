@@ -17,6 +17,7 @@ web = [
     "python-multipart>=0.0.9",
     "sqlalchemy>=2.0",
     "keyring>=24.0",        # store MangaDex creds in the OS keychain, not plaintext
+    "pillow>=10.0",         # image sizing for the Kobo KEPUB exporter
 ]
 # KEPUB image processing (Phase 5).
 export = ["pillow>=10.0"]
