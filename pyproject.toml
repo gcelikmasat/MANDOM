@@ -1,7 +1,7 @@
 [project]
-name = "manga-downloader-app"
-version = "0.1.0"
-description = "Personal-use manga downloader: pull English chapters from provider APIs (MangaDex first) and export Kobo-ready files."
+name = "mandom"
+version = "0.2.0"
+description = "Mandom - a personal-use manga downloader: pull English chapters from provider APIs (MangaDex first) and export Kobo-ready files."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -9,13 +9,20 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Pulled in for later phases (KEPUB image processing, web UI). Not needed for the Phase 1 CLI.
+# Pulled in for the web UI (Phase 2). Not needed for the Phase 1 CLI.
+web = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+    "sqlalchemy>=2.0",
+]
+# KEPUB image processing (Phase 5).
 export = ["pillow>=10.0"]
-web = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
 dev = ["ruff", "pytest", "pytest-asyncio"]
 
 [project.scripts]
-manga = "app.cli:main"
+mandom = "app.cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]

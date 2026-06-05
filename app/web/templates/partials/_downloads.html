@@ -1,0 +1,23 @@
+{# Auto-refreshed by hx-trigger="every 2s" on the parent while jobs are active. #}
+{% if not jobs %}
+  <p class="hint">Nothing queued yet. Open a manga and download a chapter.</p>
+{% else %}
+  <ul class="dl-list">
+    {% for j in jobs %}
+      {% set pct = (100 * j.progress_done // j.progress_total) if j.progress_total else 0 %}
+      <li class="dl-row dl-{{ j.state }}">
+        <div class="dl-meta">
+          <span class="dl-title">{{ j.manga_title }}</span>
+          <span class="dl-ch">ch.{{ j.chapter_label }}</span>
+          <span class="dl-state">
+            {% if j.state == 'done' %}✓ done
+            {% elif j.state == 'error' %}✕ {{ j.error or 'error' }}
+            {% elif j.state == 'running' %}{{ j.progress_done }}/{{ j.progress_total }}
+            {% else %}queued{% endif %}
+          </span>
+        </div>
+        <div class="bar"><div class="bar-fill" style="width: {{ 100 if j.state=='done' else pct }}%"></div></div>
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}

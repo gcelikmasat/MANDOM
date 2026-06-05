@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero glass">
+  <h1>Find a manga</h1>
+  <input
+    class="search"
+    type="search"
+    name="q"
+    placeholder="Search MangaDex&hellip;  (e.g. berserk, vinland saga)"
+    autocomplete="off"
+    hx-get="/search"
+    hx-trigger="keyup changed delay:400ms, search"
+    hx-target="#results"
+    hx-indicator="#search-spin">
+  <span id="search-spin" class="spin htmx-indicator">searching&hellip;</span>
+  <div id="results" class="cards"></div>
+</section>
+
+<section class="panel glass">
+  <h2>Your Library <span class="count">{{ library|length }}</span></h2>
+  <div id="library-grid" class="cards">
+    {% for m in library %}
+      <article class="card">
+        <a href="/manga/{{ m.provider_id }}/{{ m.external_id }}" class="card-cover">
+          {% if m.cover_url %}<img loading="lazy" src="/cover?url={{ m.cover_url|urlencode }}" alt="">{% endif %}
+        </a>
+        <div class="card-body">
+          <a class="card-title" href="/manga/{{ m.provider_id }}/{{ m.external_id }}">{{ m.title }}</a>
+          <form hx-post="/library/remove" hx-target="closest .card" hx-swap="outerHTML">
+            <input type="hidden" name="provider_id" value="{{ m.provider_id }}">
+            <input type="hidden" name="external_id" value="{{ m.external_id }}">
+            <input type="hidden" name="title" value="{{ m.title }}">
+            <input type="hidden" name="source" value="grid">
+            <button class="btn btn-ghost" type="submit">Remove</button>
+          </form>
+        </div>
+      </article>
+    {% else %}
+      <p class="hint">No bookmarks yet. Search above and tap the star to save one.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel glass">
+  <h2>Downloads</h2>
+  <div id="downloads" hx-get="/downloads" hx-trigger="load, every 2s"></div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ manga.title }} — Mandom{% endblock %}
+{% block content %}
+
+<section class="detail glass">
+  <div class="detail-cover">
+    {% if manga.cover_url %}<img src="/cover?url={{ manga.cover_url|urlencode }}" alt="">{% endif %}
+  </div>
+  <div class="detail-info">
+    <h1>{{ manga.title }}</h1>
+    <div class="meta-row">
+      {% if manga.status %}<span class="tag">{{ manga.status }}</span>{% endif %}
+      {% for a in manga.authors %}<span class="tag tag-author">{{ a }}</span>{% endfor %}
+    </div>
+
+    <div class="detail-actions">
+      {% set m = manga %}
+      {% set is_saved = bookmarked %}
+      {% include "partials/_bookmark_button.html" %}
+
+      <form hx-post="/download-all" hx-target="#downloads" hx-swap="innerHTML">
+        <input type="hidden" name="provider_id" value="{{ manga.provider_id }}">
+        <input type="hidden" name="manga_external_id" value="{{ manga.external_id }}">
+        <input type="hidden" name="manga_title" value="{{ manga.title }}">
+        <button class="btn btn-primary" type="submit">⬇ Download all ({{ chapters|length }})</button>
+      </form>
+    </div>
+
+    <p class="desc">{{ manga.description }}</p>
+  </div>
+</section>
+
+<section class="panel glass">
+  <h2>English chapters <span class="count">{{ chapters|length }}</span></h2>
+  <div class="chapter-list">
+    {% for c in chapters %}
+      <div class="chapter-row">
+        <span class="ch-num">{{ c.number or 'oneshot' }}</span>
+        <span class="ch-title">{{ c.title or '' }}</span>
+        <span class="ch-group">{{ c.group or '' }}</span>
+        <span class="ch-pages">{{ c.page_count }}p</span>
+        <form hx-post="/download" hx-target="#downloads" hx-swap="innerHTML">
+          <input type="hidden" name="provider_id" value="{{ c.provider_id }}">
+          <input type="hidden" name="manga_external_id" value="{{ manga.external_id }}">
+          <input type="hidden" name="manga_title" value="{{ manga.title }}">
+          <input type="hidden" name="chapter_external_id" value="{{ c.external_id }}">
+          <input type="hidden" name="chapter_label" value="{{ c.number or '0' }}">
+          <button class="btn btn-sm" type="submit">⬇</button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel glass">
+  <h2>Downloads</h2>
+  <div id="downloads" hx-get="/downloads" hx-trigger="load, every 2s"></div>
+</section>
+
+{% endblock %}

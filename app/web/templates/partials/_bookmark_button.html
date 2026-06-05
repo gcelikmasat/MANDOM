@@ -1,0 +1,13 @@
+{# Toggle button. Expects `m` (provider_id/external_id/title/cover_url) and `is_saved`. #}
+<form
+  hx-post="{{ '/library/remove' if is_saved else '/library/add' }}"
+  hx-target="this"
+  hx-swap="outerHTML">
+  <input type="hidden" name="provider_id" value="{{ m.provider_id }}">
+  <input type="hidden" name="external_id" value="{{ m.external_id }}">
+  <input type="hidden" name="title" value="{{ m.title }}">
+  <input type="hidden" name="cover_url" value="{{ m.cover_url or '' }}">
+  <button class="btn {{ 'btn-saved' if is_saved else 'btn-star' }}" type="submit">
+    {{ '★ In Library' if is_saved else '☆ Bookmark' }}
+  </button>
+</form>
