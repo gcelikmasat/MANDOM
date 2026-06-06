@@ -63,8 +63,27 @@ body {
   position: sticky; top: 12px; z-index: 10;
   margin: 12px auto; max-width: 1080px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 22px;
+  padding: 14px 22px; min-height: 88px; overflow: hidden;
 }
+/* Rotating wallpaper banner behind the header. */
+#topbar-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background-size: cover; background-position: center 22%;
+  opacity: 0; transition: opacity 0.8s ease;
+}
+#topbar-scrim {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(10,8,16,0.30), rgba(10,8,16,0.60)),
+    linear-gradient(90deg, rgba(10,8,16,0.88), rgba(10,8,16,0.20) 55%, rgba(10,8,16,0.72));
+}
+.topbar .brand, .topbar nav { position: relative; z-index: 2; }
+.topbar-credit {
+  position: absolute; right: 16px; bottom: 7px; z-index: 2;
+  font-size: 11px; color: rgba(255,255,255,0.7); text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+.topbar-credit a { color: #fff; text-decoration: none; }
+.topbar-credit a:hover { text-decoration: underline; }
 .brand { text-decoration: none; color: var(--ink); display: flex; flex-direction: column; line-height: 1; flex: 0 0 auto; }
 .brand-mark {
   font-weight: 800; letter-spacing: 4px; font-size: 22px;
@@ -75,14 +94,16 @@ body {
 
 /* Braille mascot: render in monospace at true size, then scale the whole thing
    down into a fixed-height box so the full portrait shows without bloating the bar. */
+/* Decorative ASCII art — relocated into the footer by app.js. */
 .brand-art-wrap {
-  flex: 1 1 auto;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  height: 104px;
+  height: 130px;
   overflow: hidden;
 }
+#page-footer { display: flex; justify-content: center; padding: 26px 0 44px; }
+#page-footer .brand-art-wrap { display: flex; }
 .brand-art {
   margin: 0;
   font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
@@ -222,7 +243,7 @@ h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap:
 .notice.err { background: rgba(255,90,95,0.12); border: 1px solid rgba(255,90,95,0.4); color: #ffc2c4; }
 
 @media (max-width: 720px) {
-  .brand-art-wrap { display: none; }
+  #page-footer { display: none; }
   .detail { grid-template-columns: 1fr; }
   .chapter-row { grid-template-columns: 48px 1fr auto; }
   .ch-group, .ch-pages { display: none; }

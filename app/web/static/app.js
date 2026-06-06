@@ -4,30 +4,31 @@ function setActive(btn) {
   btn.classList.add("is-active");
 }
 
-// Shuffling wallpaper: a faint full-screen backdrop PLUS a crisp, credited card
-// on the side. Drop images into wallpapers/ and (optionally) map artist handles
-// in wallpapers/credits.json. Falls back to the CSS gradient if empty.
+// Shuffling wallpaper banner in the header (visible at every width), with the
+// artist credit. Drop images into wallpapers/ and (optionally) map handles in
+// wallpapers/credits.json. The decorative ASCII art is relocated to the footer.
 (function () {
-  const bg = document.getElementById("bg");
-  const side = document.getElementById("wallpaper-side");
-  const sideImg = side ? side.querySelector("img") : null;
-  const credit = side ? side.querySelector(".wp-credit") : null;
+  // Move the ASCII mascot out of the header and into the footer.
+  const art = document.querySelector(".brand-art-wrap");
+  const footer = document.getElementById("page-footer");
+  if (art && footer) footer.appendChild(art);
+
+  const banner = document.getElementById("topbar-bg");
+  const credit = document.querySelector(".topbar-credit");
+  if (!banner) return;
   let shots = [];
   let i = 0;
 
   function show(item) {
-    if (bg) {
-      const pre = new Image();
-      pre.onload = () => {
-        bg.style.opacity = "0";
-        setTimeout(() => {
-          bg.style.backgroundImage = `url("${item.url}")`;
-          bg.style.opacity = "1";
-        }, 350);
-      };
-      pre.src = item.url;
-    }
-    if (sideImg) sideImg.src = item.url;
+    const pre = new Image();
+    pre.onload = () => {
+      banner.style.opacity = "0";
+      setTimeout(() => {
+        banner.style.backgroundImage = `url("${item.url}")`;
+        banner.style.opacity = "1";
+      }, 300);
+    };
+    pre.src = item.url;
     if (credit) {
       if (item.handle) {
         credit.innerHTML =
@@ -38,7 +39,6 @@ function setActive(btn) {
         credit.style.display = "none";
       }
     }
-    if (side) side.classList.add("show");
   }
 
   function next() {
@@ -51,7 +51,6 @@ function setActive(btn) {
     .then((r) => r.json())
     .then((list) => {
       if (!Array.isArray(list) || !list.length) return;
-      // Tolerate the old string-only format too.
       shots = list
         .map((x) => (typeof x === "string" ? { url: x, handle: null, credit_url: null } : x))
         .sort(() => Math.random() - 0.5);

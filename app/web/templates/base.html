@@ -12,6 +12,8 @@
   <div id="bg-veil"></div>
 
   <header class="topbar glass">
+    <div id="topbar-bg" aria-hidden="true"></div>
+    <div id="topbar-scrim" aria-hidden="true"></div>
     <a href="/" class="brand">
       <span class="brand-mark">MANDOM</span>
       <span class="brand-sub">manga downloader app.</span>
@@ -74,16 +76,14 @@
       <a href="/account" class="nav-link">Account</a>
       <a href="/settings" class="nav-link">Settings</a>
     </nav>
+    <span class="topbar-credit"></span>
   </header>
 
   <main class="container">
     {% block content %}{% endblock %}
   </main>
 
-  <aside id="wallpaper-side">
-    <img alt="">
-    <span class="wp-credit"></span>
-  </aside>
+  <footer id="page-footer"></footer>
 
   <script src="/static/app.js"></script>
 </body>
