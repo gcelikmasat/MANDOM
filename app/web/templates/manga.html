@@ -24,7 +24,14 @@
         <input type="hidden" name="manga_title" value="{{ manga.title }}">
         <button class="btn btn-primary" type="submit">⬇ Download all ({{ chapters|length }})</button>
       </form>
+
+      <form hx-post="/kobo/send" hx-target="#kobo-result" hx-swap="innerHTML" hx-indicator="#kobo-send-spin">
+        <input type="hidden" name="manga_title" value="{{ manga.title }}">
+        <button class="btn" type="submit">⇪ Send to Kobo</button>
+      </form>
+      <span id="kobo-send-spin" class="spin htmx-indicator">copying&hellip;</span>
     </div>
+    <div id="kobo-result"></div>
 
     <p class="desc">{{ manga.description }}</p>
   </div>

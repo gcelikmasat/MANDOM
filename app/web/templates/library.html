@@ -16,6 +16,11 @@
 </section>
 
 <section class="panel glass">
+  <h2>Send to Kobo</h2>
+  <div id="kobo-status" hx-get="/kobo/status" hx-trigger="load"></div>
+</section>
+
+<section class="panel glass">
   <h2>Downloads</h2>
   <div id="downloads" hx-get="/downloads" hx-trigger="load, every 2s"></div>
 </section>

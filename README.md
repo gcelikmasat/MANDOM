@@ -23,7 +23,9 @@ HakuNeko did, without the scraping fragility — and to ship clean files to a
 - **Phase 5 (Kobo KEPUB export)** ✅ fixed-layout, device-sized `.kepub.epub`
   with embedded series metadata (auto-sorts on the Kobo), RTL, per-chapter.
   Set `export_format` to `kepub` (default), `cbz`, or `both`.
-- Next: "send to Kobo" (auto-copy to the mounted device), in-app reader.
+- **Send to Kobo** ✅ auto-detects the mounted device and copies books onto it,
+  per-manga or the whole library.
+- Next: in-app reader.
 
 ## Setup
 

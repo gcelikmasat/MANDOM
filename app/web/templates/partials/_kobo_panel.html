@@ -1,0 +1,22 @@
+{# Kobo device status + actions. Expects devices (list), message, error. #}
+{% if message %}<p class="notice ok">{{ message }}</p>{% endif %}
+{% if error %}<p class="notice err">{{ error }}</p>{% endif %}
+
+{% if devices %}
+  <p class="signed-in">Kobo detected at
+    {% for d in devices %}<strong>{{ d }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}.
+  </p>
+  <div class="detail-actions">
+    <form hx-post="/kobo/send-all" hx-target="#kobo-status" hx-swap="innerHTML" hx-indicator="#kobo-spin">
+      <button class="btn btn-primary" type="submit">⇪ Send entire library → Kobo</button>
+    </form>
+    <span id="kobo-spin" class="spin htmx-indicator">copying&hellip;</span>
+    <form hx-get="/kobo/status" hx-target="#kobo-status" hx-swap="innerHTML">
+      <button class="btn btn-ghost" type="submit">Refresh</button>
+    </form>
+  </div>
+{% else %}
+  <p class="hint">No Kobo detected. Connect it via USB and tap <em>Connect</em> on the device, then
+    <button class="btn btn-ghost btn-sm" hx-get="/kobo/status" hx-target="#kobo-status" hx-swap="innerHTML">Refresh</button>
+  </p>
+{% endif %}

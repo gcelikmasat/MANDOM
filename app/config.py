@@ -65,6 +65,10 @@ class Config:
 
     device_profile: str = "clara_colour"
 
+    # Optional explicit Kobo mount path (e.g. "K:\\" or "/media/you/KOBOeReader").
+    # Leave None to auto-detect a connected device by its ".kobo" folder.
+    kobo_path: str | None = None
+
     user_agent: str = "manga-downloader-app/0.1 (personal use; +https://github.com/)"
 
     def profile(self) -> DeviceProfile:

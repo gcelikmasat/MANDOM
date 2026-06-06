@@ -22,6 +22,8 @@ from app.config import ROOT, load_config
 from app.db import Bookmark, DownloadJob, get_session, init_db
 from app.providers import mangadex_auth as auth
 from app.providers.mangadex import MangaDexProvider
+from app.services import kobo
+from app.services.naming import safe_filename
 from app.services.updates import check_all, record_seen, set_baseline
 from app.web.queue import DownloadManager
 
@@ -190,6 +192,51 @@ async def _baseline_follows(external_ids: list[str]) -> None:
             await set_baseline(app.state.provider, eid, language=app.state.cfg.language)
         except Exception:
             pass
+
+
+# ---- send to Kobo --------------------------------------------------------
+
+def _kobo_ctx(message: str | None = None, error: str | None = None) -> dict:
+    devices = kobo.find_kobo_devices(app.state.cfg.kobo_path)
+    return {"devices": [str(d) for d in devices], "message": message, "error": error}
+
+
+@app.get("/kobo/status", response_class=HTMLResponse)
+async def kobo_status(request: Request):
+    return TEMPLATES.TemplateResponse(request, "partials/_kobo_panel.html", _kobo_ctx())
+
+
+@app.post("/kobo/send-all", response_class=HTMLResponse)
+async def kobo_send_all(request: Request):
+    devices = kobo.find_kobo_devices(app.state.cfg.kobo_path)
+    if not devices:
+        return TEMPLATES.TemplateResponse(
+            request, "partials/_kobo_panel.html",
+            _kobo_ctx(error="No Kobo detected. Connect it via USB (tap Connect on the device) and refresh."),
+        )
+    files, mangas = await asyncio.to_thread(
+        kobo.send_all, devices[0], app.state.cfg.export_dir
+    )
+    msg = (
+        f"Copied {files} file(s) across {mangas} manga to {devices[0]}."
+        if files else "Nothing to copy yet — download some chapters first."
+    )
+    return TEMPLATES.TemplateResponse(request, "partials/_kobo_panel.html", _kobo_ctx(message=msg))
+
+
+@app.post("/kobo/send", response_class=HTMLResponse)
+async def kobo_send(request: Request, manga_title: str = Form(...)):
+    devices = kobo.find_kobo_devices(app.state.cfg.kobo_path)
+    if not devices:
+        return HTMLResponse('<p class="notice err">No Kobo detected. Connect it via USB and try again.</p>')
+    files, dest = await asyncio.to_thread(
+        kobo.send_manga, devices[0], app.state.cfg.export_dir, safe_filename(manga_title)
+    )
+    if files:
+        return HTMLResponse(f'<p class="notice ok">Sent {files} file(s) to {dest}.</p>')
+    return HTMLResponse(
+        '<p class="notice err">No downloaded files for this manga yet — download a chapter first.</p>'
+    )
 
 
 @app.get("/browse", response_class=HTMLResponse)
