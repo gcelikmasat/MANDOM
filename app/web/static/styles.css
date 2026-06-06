@@ -28,26 +28,34 @@ body {
 #bg-veil {
   position: fixed; inset: 0; z-index: -1;
   background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(138,92,255,0.22), transparent),
-    linear-gradient(180deg, rgba(8,6,12,0.45), rgba(8,6,12,0.72));
+    radial-gradient(1200px 600px at 80% -10%, rgba(138,92,255,0.25), transparent),
+    linear-gradient(180deg, rgba(8,6,12,0.55), rgba(8,6,12,0.82));
 }
 
-/* Crisp, credited wallpaper card tucked into the right margin (wide screens). */
-#wallpaper-side {
-  position: fixed; right: 20px; bottom: 20px; z-index: 1;
-  width: 220px; display: flex; flex-direction: column; gap: 8px;
-  opacity: 0; transition: opacity 1s ease; pointer-events: none;
+/* Two wallpaper cards in the left/right gutters; they conveyor left -> right. */
+.wp-card {
+  position: fixed; top: 50%; transform: translateY(-50%); z-index: 1;
+  width: 210px; display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
 }
-#wallpaper-side.show { opacity: 1; }
-#wallpaper-side img {
+#wp-left { left: 24px; }
+#wp-right { right: 24px; }
+.wp-card img {
   width: 100%; display: block; border-radius: 14px;
   border: 1px solid var(--line); box-shadow: var(--shadow); object-fit: cover;
+  opacity: 0;
 }
-#wallpaper-side .wp-credit { font-size: 12px; color: var(--muted); text-align: center; }
-#wallpaper-side .wp-credit a { color: var(--accent); text-decoration: none; pointer-events: auto; }
-#wallpaper-side .wp-credit a:hover { text-decoration: underline; }
-/* Only show when there's enough side margin not to overlap the content column. */
-@media (max-width: 1520px) { #wallpaper-side { display: none; } }
+/* Re-triggered on each swap to slide the new image in from the left. */
+.wp-card img.in { animation: wpIn 0.6s ease forwards; }
+@keyframes wpIn {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.wp-card .wp-credit { font-size: 12px; color: var(--muted); text-align: center; min-height: 14px; }
+.wp-card .wp-credit a { color: var(--accent); text-decoration: none; pointer-events: auto; }
+.wp-card .wp-credit a:hover { text-decoration: underline; }
+/* Need room in the gutters; hide if the window is too narrow. */
+@media (max-width: 1480px) { .wp-card { display: none; } }
 
 .glass {
   background: var(--glass);
@@ -63,27 +71,8 @@ body {
   position: sticky; top: 12px; z-index: 10;
   margin: 12px auto; max-width: 1080px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 22px; min-height: 88px; overflow: hidden;
+  padding: 12px 22px;
 }
-/* Rotating wallpaper banner behind the header. */
-#topbar-bg {
-  position: absolute; inset: 0; z-index: 0;
-  background-size: cover; background-position: center 22%;
-  opacity: 0; transition: opacity 0.8s ease;
-}
-#topbar-scrim {
-  position: absolute; inset: 0; z-index: 1;
-  background:
-    linear-gradient(180deg, rgba(10,8,16,0.30), rgba(10,8,16,0.60)),
-    linear-gradient(90deg, rgba(10,8,16,0.88), rgba(10,8,16,0.20) 55%, rgba(10,8,16,0.72));
-}
-.topbar .brand, .topbar nav { position: relative; z-index: 2; }
-.topbar-credit {
-  position: absolute; right: 16px; bottom: 7px; z-index: 2;
-  font-size: 11px; color: rgba(255,255,255,0.7); text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-.topbar-credit a { color: #fff; text-decoration: none; }
-.topbar-credit a:hover { text-decoration: underline; }
 .brand { text-decoration: none; color: var(--ink); display: flex; flex-direction: column; line-height: 1; flex: 0 0 auto; }
 .brand-mark {
   font-weight: 800; letter-spacing: 4px; font-size: 22px;
@@ -94,16 +83,14 @@ body {
 
 /* Braille mascot: render in monospace at true size, then scale the whole thing
    down into a fixed-height box so the full portrait shows without bloating the bar. */
-/* Decorative ASCII art — relocated into the footer by app.js. */
 .brand-art-wrap {
-  display: none;
+  flex: 1 1 auto;
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: 130px;
+  height: 104px;
   overflow: hidden;
 }
-#page-footer { display: flex; justify-content: center; padding: 26px 0 44px; }
-#page-footer .brand-art-wrap { display: flex; }
 .brand-art {
   margin: 0;
   font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
@@ -243,7 +230,7 @@ h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap:
 .notice.err { background: rgba(255,90,95,0.12); border: 1px solid rgba(255,90,95,0.4); color: #ffc2c4; }
 
 @media (max-width: 720px) {
-  #page-footer { display: none; }
+  .brand-art-wrap { display: none; }
   .detail { grid-template-columns: 1fr; }
   .chapter-row { grid-template-columns: 48px 1fr auto; }
   .ch-group, .ch-pages { display: none; }
