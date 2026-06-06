@@ -46,14 +46,17 @@
         <span class="ch-title">{{ c.title or '' }}</span>
         <span class="ch-group">{{ c.group or '' }}</span>
         <span class="ch-pages">{{ c.page_count }}p</span>
-        <form hx-post="/download" hx-target="#downloads" hx-swap="innerHTML">
-          <input type="hidden" name="provider_id" value="{{ c.provider_id }}">
-          <input type="hidden" name="manga_external_id" value="{{ manga.external_id }}">
-          <input type="hidden" name="manga_title" value="{{ manga.title }}">
-          <input type="hidden" name="chapter_external_id" value="{{ c.external_id }}">
-          <input type="hidden" name="chapter_label" value="{{ c.number or '0' }}">
-          <button class="btn btn-sm" type="submit">⬇</button>
-        </form>
+        <div class="ch-actions">
+          <a class="btn btn-sm" href="/read/{{ c.provider_id }}/{{ manga.external_id }}/{{ c.external_id }}?title={{ manga.title|urlencode }}&num={{ (c.number or '')|urlencode }}">Read</a>
+          <form hx-post="/download" hx-target="#downloads" hx-swap="innerHTML">
+            <input type="hidden" name="provider_id" value="{{ c.provider_id }}">
+            <input type="hidden" name="manga_external_id" value="{{ manga.external_id }}">
+            <input type="hidden" name="manga_title" value="{{ manga.title }}">
+            <input type="hidden" name="chapter_external_id" value="{{ c.external_id }}">
+            <input type="hidden" name="chapter_label" value="{{ c.number or '0' }}">
+            <button class="btn btn-sm" type="submit">⬇</button>
+          </form>
+        </div>
       </div>
     {% endfor %}
   </div>

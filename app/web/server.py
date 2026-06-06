@@ -8,8 +8,10 @@ progress. A shuffling wallpaper background reads from the ``wallpapers/`` folder
 from __future__ import annotations
 
 import asyncio
+import json
 from contextlib import asynccontextmanager
 from pathlib import Path
+from urllib.parse import quote
 
 import httpx
 from fastapi import FastAPI, Form, Request
@@ -415,6 +417,41 @@ async def _downloads_partial(request: Request) -> HTMLResponse:
     )
 
 
+# ---- in-app reader -------------------------------------------------------
+
+@app.get("/read/{provider_id}/{manga_id}/{chapter_id}", response_class=HTMLResponse)
+async def read(
+    request: Request, provider_id: str, manga_id: str, chapter_id: str,
+    title: str = "", num: str = "",
+):
+    provider = app.state.provider
+    batch = await provider.get_pages(chapter_id)
+    chapters = await provider.get_chapters(manga_id, language=app.state.cfg.language)
+    ids = [c.external_id for c in chapters]
+    idx = ids.index(chapter_id) if chapter_id in ids else -1
+
+    def read_url(c) -> str:
+        return (
+            f"/read/{provider_id}/{manga_id}/{c.external_id}"
+            f"?title={quote(title)}&num={quote(c.number or '')}"
+        )
+
+    prev_url = read_url(chapters[idx - 1]) if idx > 0 else None
+    next_url = read_url(chapters[idx + 1]) if 0 <= idx < len(chapters) - 1 else None
+    return TEMPLATES.TemplateResponse(
+        request, "reader.html",
+        {
+            "manga_title": title or "Reader",
+            "chapter_num": num,
+            "pages": batch.urls,
+            "direction": app.state.cfg.reading_direction,
+            "prev_url": prev_url,
+            "next_url": next_url,
+            "back_url": f"/manga/{provider_id}/{manga_id}",
+        },
+    )
+
+
 # ---- image proxy + wallpapers -------------------------------------------
 
 @app.get("/cover")
@@ -435,9 +472,21 @@ async def cover(url: str):
 @app.get("/api/wallpapers")
 async def wallpapers():
     folder = ROOT / "wallpapers"
-    files = sorted(
-        f"/wallpapers/{p.name}"
-        for p in folder.iterdir()
-        if p.is_file() and p.suffix.lower() in _IMAGE_EXTS
-    )
-    return JSONResponse(files)
+    # Optional artist credits: { "<filename>": "<twitter/x handle>" }.
+    credits: dict = {}
+    credits_file = folder / "credits.json"
+    if credits_file.exists():
+        try:
+            credits = json.loads(credits_file.read_text(encoding="utf-8"))
+        except Exception:
+            credits = {}
+    out = []
+    for p in sorted(folder.iterdir()):
+        if p.is_file() and p.suffix.lower() in _IMAGE_EXTS:
+            handle = (credits.get(p.name) or "").lstrip("@").strip()
+            out.append({
+                "url": f"/wallpapers/{p.name}",
+                "handle": f"@{handle}" if handle else None,
+                "credit_url": f"https://x.com/{handle}" if handle else None,
+            })
+    return JSONResponse(out)

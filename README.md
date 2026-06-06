@@ -25,7 +25,18 @@ HakuNeko did, without the scraping fragility — and to ship clean files to a
   Set `export_format` to `kepub` (default), `cbz`, or `both`.
 - **Send to Kobo** ✅ auto-detects the mounted device and copies books onto it,
   per-manga or the whole library.
-- Next: in-app reader.
+- **Phase 6 (in-app reader)** ✅ immersive paged reader (RTL/LTR, click zones +
+  arrow keys, chapter-to-chapter navigation) — read without leaving Mandom.
+
+## Wallpapers
+
+Drop images into `wallpapers/`; they shuffle as a faint backdrop and a crisp
+card in the side margin (wide screens). To credit artists, map filenames to
+Twitter/X handles in `wallpapers/credits.json`, e.g.:
+
+```json
+{ "jolyne.jpg": "the_artist_handle" }
+```
 
 ## Setup
 

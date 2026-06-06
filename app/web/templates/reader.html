@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ manga_title }} {{ chapter_num }} — Mandom</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="reader-body">
+  <div class="reader-bar glass">
+    <a class="btn btn-ghost btn-sm" href="{{ back_url }}">← {{ manga_title }}</a>
+    <span class="reader-mid">Ch. {{ chapter_num or "?" }} · <span id="counter">1 / {{ pages|length }}</span></span>
+    <button id="dir-toggle" class="btn btn-sm" type="button">RTL</button>
+  </div>
+
+  <div class="reader-stage">
+    {% if pages %}
+      <img id="page-img" alt="page">
+    {% else %}
+      <p class="hint" style="margin-top:40px">No pages found for this chapter.</p>
+    {% endif %}
+  </div>
+
+  <div id="edge-left" class="reader-edge edge-left"></div>
+  <div id="edge-right" class="reader-edge edge-right"></div>
+
+  <script>
+    window.READER = {
+      pages: {{ pages|tojson }},
+      direction: "{{ direction }}",
+      prevUrl: {{ prev_url|tojson }},
+      nextUrl: {{ next_url|tojson }}
+    };
+  </script>
+  <script src="/static/reader.js"></script>
+</body>
+</html>

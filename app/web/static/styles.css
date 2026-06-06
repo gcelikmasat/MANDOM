@@ -28,9 +28,26 @@ body {
 #bg-veil {
   position: fixed; inset: 0; z-index: -1;
   background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(138,92,255,0.25), transparent),
-    linear-gradient(180deg, rgba(8,6,12,0.55), rgba(8,6,12,0.82));
+    radial-gradient(1200px 600px at 80% -10%, rgba(138,92,255,0.22), transparent),
+    linear-gradient(180deg, rgba(8,6,12,0.45), rgba(8,6,12,0.72));
 }
+
+/* Crisp, credited wallpaper card tucked into the right margin (wide screens). */
+#wallpaper-side {
+  position: fixed; right: 20px; bottom: 20px; z-index: 1;
+  width: 220px; display: flex; flex-direction: column; gap: 8px;
+  opacity: 0; transition: opacity 1s ease; pointer-events: none;
+}
+#wallpaper-side.show { opacity: 1; }
+#wallpaper-side img {
+  width: 100%; display: block; border-radius: 14px;
+  border: 1px solid var(--line); box-shadow: var(--shadow); object-fit: cover;
+}
+#wallpaper-side .wp-credit { font-size: 12px; color: var(--muted); text-align: center; }
+#wallpaper-side .wp-credit a { color: var(--accent); text-decoration: none; pointer-events: auto; }
+#wallpaper-side .wp-credit a:hover { text-decoration: underline; }
+/* Only show when there's enough side margin not to overlap the content column. */
+@media (max-width: 1520px) { #wallpaper-side { display: none; } }
 
 .glass {
   background: var(--glass);
@@ -154,12 +171,26 @@ h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap:
 
 /* chapter list */
 .chapter-list { display: flex; flex-direction: column; }
-.chapter-row { display: grid; grid-template-columns: 64px 1fr 160px 50px 44px; gap: 12px; align-items: center;
+.chapter-row { display: grid; grid-template-columns: 64px 1fr 150px 46px auto; gap: 12px; align-items: center;
   padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 14px; }
 .chapter-row:hover { background: rgba(255,255,255,0.04); }
 .ch-num { font-weight: 700; color: var(--accent); }
 .ch-title { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ch-group, .ch-pages { color: var(--muted); font-size: 12px; }
+.ch-actions { display: flex; gap: 8px; align-items: center; }
+
+/* in-app reader */
+.reader-body { margin: 0; background: #0a0810; min-height: 100vh; }
+.reader-bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center;
+  justify-content: space-between; gap: 12px; padding: 10px 16px; border-radius: 0; }
+.reader-mid { font-size: 13px; color: var(--muted); }
+.reader-stage { display: flex; justify-content: center; align-items: flex-start;
+  padding: 8px; min-height: calc(100vh - 58px); }
+#page-img { max-width: 100%; max-height: calc(100vh - 70px); object-fit: contain; display: block;
+  -webkit-user-select: none; user-select: none; }
+.reader-edge { position: fixed; top: 58px; bottom: 0; width: 34%; z-index: 5; cursor: pointer; }
+.edge-left { left: 0; }
+.edge-right { right: 0; }
 
 /* downloads */
 .dl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
@@ -190,6 +221,6 @@ h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap:
 @media (max-width: 720px) {
   .brand-art-wrap { display: none; }
   .detail { grid-template-columns: 1fr; }
-  .chapter-row { grid-template-columns: 50px 1fr 44px; }
+  .chapter-row { grid-template-columns: 48px 1fr auto; }
   .ch-group, .ch-pages { display: none; }
 }
