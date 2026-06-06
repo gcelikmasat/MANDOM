@@ -33,9 +33,9 @@ HakuNeko did, without the scraping fragility — and to ship clean files to a
 
 ## Wallpapers
 
-Drop images into `wallpapers/`; they shuffle as a faint backdrop and a crisp
-card in the side margin (wide screens). To credit artists, map filenames to
-Twitter/X handles in `wallpapers/credits.json`, e.g.:
+Drop images into `wallpapers/`; they rotate as the header banner (with the
+artist credit), and the ASCII mascot sits in the footer. To credit artists, map
+filenames to Twitter/X handles in `wallpapers/credits.json`, e.g.:
 
 ```json
 { "jolyne.jpg": "the_artist_handle" }
@@ -73,4 +73,22 @@ Files land in `downloads/<Manga Title>/` with zero-padded names
 ## Config
 
 Optional `config.toml` in the repo root overrides defaults (export folder,
-filename template, concurrency, etc.). See `config.example.toml`.
+filename template, concurrency, etc.). See `config.example.toml`. Most of these
+are editable from the in-app **Settings** page.
+
+## Deployment
+
+**Native (recommended for daily use):** double-click **`start-mandom.bat`** — it
+launches the server and opens your browser. Keeps the OS keychain (secure
+secrets) and Send-to-Kobo (USB) working. One-time setup is the venv above.
+
+**Docker (for sharing / self-hosting):**
+
+```bash
+docker compose up --build      # http://localhost:8000
+```
+
+In a container there's no OS keychain, so secrets fall back to a file under
+`data/` (`MANDOM_SECRET_BACKEND=file`), and **Send-to-Kobo is unavailable**
+(no USB access). Everything else — browse, download, KEPUB export, account
+sync — works. Bring your own MangaDex client/credentials via the Account page.

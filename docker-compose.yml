@@ -1,0 +1,13 @@
+services:
+  mandom:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist the DB/secrets, downloaded books, and your wallpapers.
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./wallpapers:/app/wallpapers
+    environment:
+      - MANDOM_SECRET_BACKEND=file
+    restart: unless-stopped
