@@ -6,6 +6,7 @@
 
 # Secrets / local config
 .env
+config.toml
 config.local.toml
 *.secret
 

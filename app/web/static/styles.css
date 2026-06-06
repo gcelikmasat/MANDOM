@@ -207,11 +207,14 @@ h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap:
 /* account / login */
 .login-form { display: grid; gap: 14px; max-width: 420px; margin-top: 16px; }
 .login-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
-.login-form input {
+.login-form input, .login-form select {
   padding: 11px 14px; font-size: 14px; color: var(--ink);
   background: rgba(0,0,0,0.35); border: 1px solid var(--line); border-radius: 10px; outline: none;
 }
-.login-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,90,95,0.16); }
+.login-form select { appearance: none; cursor: pointer; }
+.login-form select option { background: #15131d; color: var(--ink); }
+.login-form input:focus, .login-form select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,90,95,0.16); }
+.login-form { max-width: 520px; }
 .login-actions { display: flex; align-items: center; gap: 10px; }
 .signed-in { font-size: 15px; margin: 6px 0 14px; }
 .notice { font-size: 14px; border-radius: 10px; padding: 10px 14px; margin: 0 0 14px; }

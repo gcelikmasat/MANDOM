@@ -1,0 +1,47 @@
+{# Settings form. Expects cfg, profiles, and optionally saved/error. #}
+{% if saved %}<p class="notice ok">Settings saved.</p>{% endif %}
+{% if error %}<p class="notice err">{{ error }}</p>{% endif %}
+
+<form class="login-form" hx-post="/settings" hx-target="#settings-panel" hx-swap="innerHTML">
+  <label>Download folder
+    <input name="export_dir" value="{{ cfg.export_dir }}" autocomplete="off">
+  </label>
+
+  <label>Export format
+    <select name="export_format">
+      <option value="kepub" {% if cfg.export_format == 'kepub' %}selected{% endif %}>Kobo KEPUB (best for Kobo)</option>
+      <option value="cbz" {% if cfg.export_format == 'cbz' %}selected{% endif %}>CBZ (plain comic zip)</option>
+      <option value="both" {% if cfg.export_format == 'both' %}selected{% endif %}>Both</option>
+    </select>
+  </label>
+
+  <label>Reader: which side turns to the next page
+    <select name="reader_advance_side">
+      <option value="right" {% if cfg.reader_advance_side == 'right' %}selected{% endif %}>Right side / → key = next page</option>
+      <option value="left" {% if cfg.reader_advance_side == 'left' %}selected{% endif %}>Left side / ← key = next page</option>
+    </select>
+  </label>
+
+  <label>EPUB page direction (Kobo)
+    <select name="reading_direction">
+      <option value="rtl" {% if cfg.reading_direction == 'rtl' %}selected{% endif %}>Right-to-left (manga)</option>
+      <option value="ltr" {% if cfg.reading_direction == 'ltr' %}selected{% endif %}>Left-to-right (webtoon/manhwa)</option>
+    </select>
+  </label>
+
+  <label>Device profile
+    <select name="device_profile">
+      {% for key, p in profiles.items() %}
+        <option value="{{ key }}" {% if cfg.device_profile == key %}selected{% endif %}>{{ p.name }} ({{ p.width }}×{{ p.height }})</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Kobo path (optional — leave blank to auto-detect)
+    <input name="kobo_path" value="{{ cfg.kobo_path or '' }}" placeholder="auto-detect" autocomplete="off">
+  </label>
+
+  <div class="login-actions">
+    <button class="btn btn-primary" type="submit">Save settings</button>
+  </div>
+</form>

@@ -10,7 +10,7 @@
   <div class="reader-bar glass">
     <a class="btn btn-ghost btn-sm" href="{{ back_url }}">← {{ manga_title }}</a>
     <span class="reader-mid">Ch. {{ chapter_num or "?" }} · <span id="counter">1 / {{ pages|length }}</span></span>
-    <button id="dir-toggle" class="btn btn-sm" type="button">RTL</button>
+    <button id="dir-toggle" class="btn btn-sm" type="button">next →</button>
   </div>
 
   <div class="reader-stage">
@@ -27,7 +27,7 @@
   <script>
     window.READER = {
       pages: {{ pages|tojson }},
-      direction: "{{ direction }}",
+      advanceSide: "{{ advance_side }}",
       prevUrl: {{ prev_url|tojson }},
       nextUrl: {{ next_url|tojson }}
     };

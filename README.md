@@ -25,8 +25,11 @@ HakuNeko did, without the scraping fragility — and to ship clean files to a
   Set `export_format` to `kepub` (default), `cbz`, or `both`.
 - **Send to Kobo** ✅ auto-detects the mounted device and copies books onto it,
   per-manga or the whole library.
-- **Phase 6 (in-app reader)** ✅ immersive paged reader (RTL/LTR, click zones +
-  arrow keys, chapter-to-chapter navigation) — read without leaving Mandom.
+- **Phase 6 (in-app reader)** ✅ immersive paged reader (click zones + arrow
+  keys, configurable advance side, chapter-to-chapter navigation).
+- **Settings page** ✅ change the download folder, export format, reader
+  advance side, EPUB direction, device profile, and Kobo path in-app
+  (persisted to `config.toml`).
 
 ## Wallpapers
 

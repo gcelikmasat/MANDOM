@@ -9,7 +9,8 @@
   const total = R.pages.length;
   if (!img || !total) return;
 
-  let dir = localStorage.getItem("mandom_dir") || R.direction || "rtl";
+  // Which side / arrow advances to the NEXT page ("right" or "left").
+  let advance = localStorage.getItem("mandom_advance") || R.advanceSide || "right";
   let idx = 0;
 
   function preload(n) {
@@ -42,22 +43,22 @@
     render();
   }
 
-  // In RTL, the left side advances the story; in LTR the right side does.
-  function leftZone() { go(dir === "rtl" ? +1 : -1); }
-  function rightZone() { go(dir === "rtl" ? -1 : +1); }
+  // The chosen side advances; the other goes back.
+  function rightAction() { go(advance === "right" ? +1 : -1); }
+  function leftAction() { go(advance === "right" ? -1 : +1); }
 
-  document.getElementById("edge-left").addEventListener("click", leftZone);
-  document.getElementById("edge-right").addEventListener("click", rightZone);
+  document.getElementById("edge-right").addEventListener("click", rightAction);
+  document.getElementById("edge-left").addEventListener("click", leftAction);
   document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") leftZone();
-    else if (e.key === "ArrowRight") rightZone();
+    if (e.key === "ArrowRight") rightAction();
+    else if (e.key === "ArrowLeft") leftAction();
     else if (e.key === " ") { e.preventDefault(); go(+1); }
   });
 
-  function updateLabel() { dirToggle.textContent = dir === "rtl" ? "← RTL" : "LTR →"; }
+  function updateLabel() { dirToggle.textContent = advance === "right" ? "next →" : "← next"; }
   dirToggle.addEventListener("click", () => {
-    dir = dir === "rtl" ? "ltr" : "rtl";
-    localStorage.setItem("mandom_dir", dir);
+    advance = advance === "right" ? "left" : "right";
+    localStorage.setItem("mandom_advance", advance);
     updateLabel();
   });
 

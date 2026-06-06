@@ -31,7 +31,8 @@ DEVICE_PROFILES: dict[str, DeviceProfile] = {
 }
 
 
-@dataclass(frozen=True, slots=True)
+# Mutable so the Settings page can update it in place (all holders see changes).
+@dataclass(slots=True)
 class Config:
     # Where finished books are written (one subfolder per manga).
     export_dir: Path = ROOT / "downloads"
@@ -58,6 +59,10 @@ class Config:
     # Reading direction for the EPUB. Manga is right-to-left; set "ltr" for
     # webtoons / manhwa.
     reading_direction: str = "rtl"  # "rtl" | "ltr"
+
+    # In-app reader: which side / arrow key turns to the NEXT page.
+    # "right" (default) = tap right edge or press → to advance.
+    reader_advance_side: str = "right"  # "right" | "left"
 
     # Download politeness.
     max_concurrency: int = 4
@@ -91,3 +96,26 @@ def load_config(path: Path | None = None) -> Config:
             overrides[key] = value
         cfg = replace(cfg, **overrides)
     return cfg
+
+
+def _toml_literal(value: object) -> str:
+    """TOML single-quoted literal string (no escape processing — safe for Windows
+    paths with backslashes). Strips any embedded single quotes."""
+    return "'" + str(value).replace("'", "") + "'"
+
+
+def save_config(cfg: Config, path: Path | None = None) -> None:
+    """Persist the user-editable settings to config.toml (written by the
+    Settings page) so they survive restarts."""
+    path = path or (ROOT / "config.toml")
+    lines = [
+        "# Mandom settings - written by the Settings page. Safe to edit by hand.",
+        f"export_dir = {_toml_literal(cfg.export_dir)}",
+        f"export_format = {_toml_literal(cfg.export_format)}",
+        f"reading_direction = {_toml_literal(cfg.reading_direction)}",
+        f"reader_advance_side = {_toml_literal(cfg.reader_advance_side)}",
+        f"device_profile = {_toml_literal(cfg.device_profile)}",
+    ]
+    if cfg.kobo_path:
+        lines.append(f"kobo_path = {_toml_literal(cfg.kobo_path)}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")

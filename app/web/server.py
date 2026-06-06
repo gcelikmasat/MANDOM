@@ -20,7 +20,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 
-from app.config import ROOT, load_config
+from app.config import DEVICE_PROFILES, ROOT, load_config, save_config
 from app.db import Bookmark, DownloadJob, get_session, init_db
 from app.providers import mangadex_auth as auth
 from app.providers.mangadex import MangaDexProvider
@@ -444,11 +444,65 @@ async def read(
             "manga_title": title or "Reader",
             "chapter_num": num,
             "pages": batch.urls,
-            "direction": app.state.cfg.reading_direction,
+            "advance_side": app.state.cfg.reader_advance_side,
             "prev_url": prev_url,
             "next_url": next_url,
             "back_url": f"/manga/{provider_id}/{manga_id}",
         },
+    )
+
+
+# ---- settings ------------------------------------------------------------
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    return TEMPLATES.TemplateResponse(
+        request, "settings.html",
+        {"cfg": app.state.cfg, "profiles": DEVICE_PROFILES},
+    )
+
+
+@app.post("/settings", response_class=HTMLResponse)
+async def settings_save(
+    request: Request,
+    export_dir: str = Form(...),
+    export_format: str = Form(...),
+    reading_direction: str = Form(...),
+    reader_advance_side: str = Form(...),
+    device_profile: str = Form(...),
+    kobo_path: str = Form(""),
+):
+    cfg = app.state.cfg
+    error = None
+
+    new_dir = export_dir.strip()
+    if new_dir:
+        try:
+            p = Path(new_dir).expanduser()
+            p.mkdir(parents=True, exist_ok=True)
+            cfg.export_dir = p
+        except Exception as exc:
+            error = f"Couldn't use that download folder: {exc}"
+
+    if export_format in ("kepub", "cbz", "both"):
+        cfg.export_format = export_format
+    if reading_direction in ("rtl", "ltr"):
+        cfg.reading_direction = reading_direction
+    if reader_advance_side in ("right", "left"):
+        cfg.reader_advance_side = reader_advance_side
+    if device_profile in DEVICE_PROFILES:
+        cfg.device_profile = device_profile
+    cfg.kobo_path = kobo_path.strip() or None
+
+    if not error:
+        try:
+            save_config(cfg)
+        except Exception as exc:
+            error = f"Applied for this session, but couldn't write config.toml: {exc}"
+
+    return TEMPLATES.TemplateResponse(
+        request, "partials/_settings_form.html",
+        {"cfg": cfg, "profiles": DEVICE_PROFILES, "saved": not error, "error": error},
     )
 
 
