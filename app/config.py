@@ -7,11 +7,18 @@ separately in a later phase and never stored in plaintext config.
 
 from __future__ import annotations
 
+import sys
 import tomllib
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+# Project root for writable data (downloads, db, wallpapers, config.toml).
+# When packaged as a PyInstaller .exe, write next to the executable instead of
+# the temporary _MEIPASS extraction dir.
+if getattr(sys, "frozen", False):
+    ROOT = Path(sys.executable).resolve().parent
+else:
+    ROOT = Path(__file__).resolve().parent.parent
 
 
 @dataclass(frozen=True, slots=True)

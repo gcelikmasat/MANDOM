@@ -67,6 +67,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Mandom", lifespan=lifespan)
+# Ensure the wallpapers folder exists so StaticFiles can mount it on a fresh
+# install (packaged .exe / fresh container).
+(ROOT / "wallpapers").mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
 app.mount("/wallpapers", StaticFiles(directory=str(ROOT / "wallpapers")), name="wallpapers")
 

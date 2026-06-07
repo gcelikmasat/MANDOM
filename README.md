@@ -76,10 +76,34 @@ Optional `config.toml` in the repo root overrides defaults (export folder,
 filename template, concurrency, etc.). See `config.example.toml`. Most of these
 are editable from the in-app **Settings** page.
 
+## Desktop app
+
+Run the exact same UI in a native window instead of a browser tab:
+
+```powershell
+pip install -e ".[web,desktop]"
+python desktop.py            # or double-click start-desktop.bat
+```
+
+To ship a **single double-click `.exe`** (no Python needed by the user),
+package it with PyInstaller:
+
+```powershell
+pip install pyinstaller
+pyinstaller --noconfirm --windowed --name Mandom ^
+  --add-data "app/web/templates;app/web/templates" ^
+  --add-data "app/web/static;app/web/static" ^
+  --collect-all webview ^
+  desktop.py
+```
+
+The resulting `dist/Mandom/Mandom.exe` writes its `data/`, `downloads/`, and
+`wallpapers/` folders next to itself.
+
 ## Deployment
 
-**Native (recommended for daily use):** double-click **`start-mandom.bat`** — it
-launches the server and opens your browser. Keeps the OS keychain (secure
+**Native (recommended for daily use):** double-click **`start-mandom.bat`** (web
+UI) or **`start-desktop.bat`** (native window). Keeps the OS keychain (secure
 secrets) and Send-to-Kobo (USB) working. One-time setup is the venv above.
 
 **Docker (for sharing / self-hosting):**

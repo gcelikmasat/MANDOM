@@ -21,6 +21,8 @@ web = [
 ]
 # KEPUB image processing (Phase 5).
 export = ["pillow>=10.0"]
+# Native desktop window (same web UI, no browser tab).
+desktop = ["pywebview>=5.0"]
 dev = ["ruff", "pytest", "pytest-asyncio"]
 
 [project.scripts]
