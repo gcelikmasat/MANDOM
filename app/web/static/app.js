@@ -14,7 +14,6 @@ function setActive(btn) {
 // and right gutters. They conveyor left -> right — the newest image enters on
 // the left, last tick's left image moves to the right, e.g. (2,1)->(3,2)->(1,3).
 (function () {
-  const bg = document.getElementById("bg");
   const lImg = document.querySelector("#wp-left img");
   const rImg = document.querySelector("#wp-right img");
   const lCred = document.querySelector("#wp-left .wp-credit");
@@ -48,13 +47,6 @@ function setActive(btn) {
     const ri = (li - 1 + n) % n; // right = previous (older) image
     const leftItem = shots[li];
     const rightItem = shots[ri];
-    if (bg) {
-      bg.style.opacity = "0";
-      setTimeout(() => {
-        bg.style.backgroundImage = `url("${leftItem.url}")`;
-        bg.style.opacity = "1";
-      }, 300);
-    }
     fillCard(lImg, lCred, leftItem);
     fillCard(rImg, rCred, rightItem);
   }

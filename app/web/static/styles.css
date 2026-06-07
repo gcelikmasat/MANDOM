@@ -33,31 +33,37 @@ body {
 }
 
 /* Two wallpaper cards in the left/right gutters; they conveyor left -> right. */
+/* Two full-height wallpaper panels filling the left/right ~1/3 of the screen,
+   BEHIND the centered content (which sits on top). They conveyor left -> right. */
 .wp-card {
-  position: fixed; top: 104px; bottom: 34px; z-index: 1;
-  width: 232px; display: flex; flex-direction: column; gap: 10px;
-  pointer-events: none;
+  position: fixed; top: 0; bottom: 0; width: 35vw; z-index: 0;
+  pointer-events: none; overflow: hidden;
 }
-#wp-left { left: 24px; }
-#wp-right { right: 24px; }
+#wp-left { left: 0; }
+#wp-right { right: 0; }
 .wp-card img {
-  flex: 1 1 auto; min-height: 0; width: 100%; display: block; border-radius: 16px;
-  border: 1px solid var(--line); box-shadow: var(--shadow); object-fit: cover;
-  opacity: 0;
+  width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0;
 }
-/* Re-triggered on each swap to slide the new image in from the left. */
-.wp-card img.in { animation: wpIn 0.6s ease forwards; }
-@keyframes wpIn {
-  from { opacity: 0; transform: translateX(-28px); }
-  to   { opacity: 1; transform: translateX(0); }
+/* Fade the inner edge (toward the content) into the dark theme. */
+#wp-left img {
+  -webkit-mask-image: linear-gradient(to right, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 60%, transparent 100%);
 }
-.wp-card .wp-credit { font-size: 12px; color: var(--muted); min-height: 14px; }
-#wp-left .wp-credit { text-align: left; }
-#wp-right .wp-credit { text-align: right; }
-.wp-card .wp-credit a { color: var(--accent); text-decoration: none; pointer-events: auto; }
+#wp-right img {
+  -webkit-mask-image: linear-gradient(to left, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 60%, transparent 100%);
+}
+.wp-card img.in { animation: wpIn 0.8s ease forwards; }
+@keyframes wpIn { from { opacity: 0; } to { opacity: 1; } }
+.wp-card .wp-credit {
+  position: absolute; bottom: 14px; z-index: 1;
+  font-size: 12px; color: rgba(255,255,255,0.78); text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+}
+#wp-left .wp-credit { left: 16px; }
+#wp-right .wp-credit { right: 16px; }
+.wp-card .wp-credit a { color: #fff; text-decoration: none; pointer-events: auto; }
 .wp-card .wp-credit a:hover { text-decoration: underline; }
-/* Need room in the gutters; hide if the window is too narrow. */
-@media (max-width: 1480px) { .wp-card { display: none; } }
+@media (max-width: 760px) { .wp-card { display: none; } }
 
 .glass {
   background: var(--glass);
@@ -111,7 +117,7 @@ nav { flex: 0 0 auto; display: flex; gap: 16px; }
 .nav-link { color: var(--muted); text-decoration: none; font-size: 14px; }
 .nav-link:hover { color: var(--ink); }
 
-.container { max-width: 1080px; margin: 0 auto; padding: 0 12px 80px; display: grid; gap: 18px; }
+.container { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 12px 80px; display: grid; gap: 18px; }
 
 .hero, .panel, .detail { padding: 22px; }
 h1 { margin: 0 0 14px; font-size: 26px; }
