@@ -547,3 +547,36 @@ async def wallpapers():
                 "credit_url": f"https://x.com/{handle}" if handle else None,
             })
     return JSONResponse(out)
+
+
+# ---- PWA (installable on phones / desktops) ------------------------------
+
+_MANIFEST = {
+    "name": "Mandom",
+    "short_name": "Mandom",
+    "description": "Personal manga downloader & reader",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#0c0a12",
+    "theme_color": "#0c0a12",
+    "icons": [
+        {"src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+        {"src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+        {"src": "/static/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+    ],
+}
+
+
+@app.get("/manifest.webmanifest")
+async def manifest():
+    return JSONResponse(_MANIFEST, media_type="application/manifest+json")
+
+
+@app.get("/sw.js")
+async def service_worker():
+    js = (WEB_DIR / "static" / "sw.js").read_text(encoding="utf-8")
+    # Served from root so its scope covers the whole app.
+    return Response(js, media_type="application/javascript",
+                    headers={"Service-Worker-Allowed": "/"})

@@ -116,3 +116,24 @@ In a container there's no OS keychain, so secrets fall back to a file under
 `data/` (`MANDOM_SECRET_BACKEND=file`), and **Send-to-Kobo is unavailable**
 (no USB access). Everything else — browse, download, KEPUB export, account
 sync — works. Bring your own MangaDex client/credentials via the Account page.
+
+## Use on your phone (PWA)
+
+Mandom is an installable PWA (app icon, fullscreen). The phone talks to the
+server running on your PC (or a hosted instance) — it doesn't run the backend
+itself.
+
+1. Start the server so other devices can reach it:
+   ```powershell
+   python run.py --host 0.0.0.0
+   ```
+   Allow the port through Windows Firewall, and find your PC's LAN IP
+   (`ipconfig`).
+2. On your phone (same Wi-Fi), open `http://<PC-LAN-IP>:8000`.
+3. **iPhone (Safari):** Share → *Add to Home Screen* — runs fullscreen. Works
+   over plain LAN HTTP.
+4. **Android (Chrome):** full install needs **HTTPS**. Easiest is a tunnel like
+   `cloudflared tunnel --url http://localhost:8000` or Tailscale Serve, which
+   gives an `https://…` URL you can install from anywhere.
+
+The in-app reader works great on a phone; Send-to-Kobo is desktop-only.

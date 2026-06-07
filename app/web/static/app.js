@@ -1,3 +1,9 @@
+// Register the service worker so the app is installable (PWA). Only in a secure
+// context (https or localhost) — avoids errors when accessed over plain http.
+if ("serviceWorker" in navigator && window.isSecureContext) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+
 // Browse tab active-state toggle.
 function setActive(btn) {
   btn.parentElement.querySelectorAll(".chip").forEach((c) => c.classList.remove("is-active"));
