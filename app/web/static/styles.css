@@ -34,14 +34,14 @@ body {
 
 /* Two wallpaper cards in the left/right gutters; they conveyor left -> right. */
 .wp-card {
-  position: fixed; top: 50%; transform: translateY(-50%); z-index: 1;
-  width: 210px; display: flex; flex-direction: column; gap: 8px;
+  position: fixed; top: 104px; bottom: 34px; z-index: 1;
+  width: 232px; display: flex; flex-direction: column; gap: 10px;
   pointer-events: none;
 }
 #wp-left { left: 24px; }
 #wp-right { right: 24px; }
 .wp-card img {
-  width: 100%; display: block; border-radius: 14px;
+  flex: 1 1 auto; min-height: 0; width: 100%; display: block; border-radius: 16px;
   border: 1px solid var(--line); box-shadow: var(--shadow); object-fit: cover;
   opacity: 0;
 }
@@ -51,7 +51,9 @@ body {
   from { opacity: 0; transform: translateX(-28px); }
   to   { opacity: 1; transform: translateX(0); }
 }
-.wp-card .wp-credit { font-size: 12px; color: var(--muted); text-align: center; min-height: 14px; }
+.wp-card .wp-credit { font-size: 12px; color: var(--muted); min-height: 14px; }
+#wp-left .wp-credit { text-align: left; }
+#wp-right .wp-credit { text-align: right; }
 .wp-card .wp-credit a { color: var(--accent); text-decoration: none; pointer-events: auto; }
 .wp-card .wp-credit a:hover { text-decoration: underline; }
 /* Need room in the gutters; hide if the window is too narrow. */
