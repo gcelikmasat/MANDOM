@@ -6,6 +6,7 @@
 
 # Source art for icon generation (generated PNGs in static/ are committed)
 *.webp
+mandom.ico
 
 # Secrets / local config
 .env
@@ -19,6 +20,7 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+*.spec
 
 # Local Claude Code / harness settings
 .claude/
