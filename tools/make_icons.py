@@ -18,12 +18,18 @@ STATIC = Path(__file__).resolve().parent.parent / "app" / "web" / "static"
 BG = (12, 10, 18, 255)  # matches the app background (#0c0a12)
 
 
-def square(im: Image.Image, size: int, pad: float = 0.0) -> Image.Image:
-    """Center-crop to a square, then fit onto a `size` canvas with `pad` margin."""
+def square(im: Image.Image, size: int, pad: float = 0.0, vbias: float = 0.5) -> Image.Image:
+    """Crop to a square then fit onto a `size` canvas with `pad` margin.
+
+    ``vbias`` chooses the vertical crop window for tall images: 0.0 = top
+    (faces), 0.5 = center, 1.0 = bottom.
+    """
     im = im.convert("RGBA")
     w, h = im.size
     s = min(w, h)
-    im = im.crop(((w - s) // 2, (h - s) // 2, (w - s) // 2 + s, (h - s) // 2 + s))
+    left = (w - s) // 2
+    top = int((h - s) * vbias)
+    im = im.crop((left, top, left + s, top + s))
     inner = int(size * (1 - pad * 2))
     im = im.resize((inner, inner), Image.LANCZOS)
     canvas = Image.new("RGBA", (size, size), BG)
@@ -37,9 +43,11 @@ def main() -> None:
         print("usage: python tools/make_icons.py <source-image>")
         raise SystemExit(2)
     src = Image.open(sys.argv[1])
-    square(src, 512).save(STATIC / "icon-512.png")
-    square(src, 512, pad=0.12).save(STATIC / "icon-512-maskable.png")
-    square(src, 192).save(STATIC / "icon-192.png")
+    # Optional vertical bias (0=top/face, 0.5=center, 1=bottom).
+    vbias = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
+    square(src, 512, vbias=vbias).save(STATIC / "icon-512.png")
+    square(src, 512, pad=0.12, vbias=vbias).save(STATIC / "icon-512-maskable.png")
+    square(src, 192, vbias=vbias).save(STATIC / "icon-192.png")
     print("wrote icon-192.png, icon-512.png, icon-512-maskable.png to", STATIC)
 
 

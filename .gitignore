@@ -4,6 +4,9 @@
 /wallpapers/*
 !/wallpapers/.gitkeep
 
+# Source art for icon generation (generated PNGs in static/ are committed)
+*.webp
+
 # Secrets / local config
 .env
 config.toml
