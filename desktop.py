@@ -20,6 +20,10 @@ import time
 import uvicorn
 import webview  # pywebview
 
+# Import the app object directly (not via uvicorn's "module:app" string) so
+# PyInstaller actually bundles the whole `app` package into the .exe.
+from app.web.server import app as fastapi_app
+
 
 def _free_port() -> int:
     s = socket.socket()
@@ -43,7 +47,8 @@ def _wait_until_up(port: int, timeout: float = 20.0) -> bool:
 def main() -> None:
     port = _free_port()
     config = uvicorn.Config(
-        "app.web.server:app", host="127.0.0.1", port=port, log_level="warning"
+        fastapi_app, host="127.0.0.1", port=port,
+        log_level="warning", log_config=None,  # no console in --windowed builds
     )
     server = uvicorn.Server(config)
 

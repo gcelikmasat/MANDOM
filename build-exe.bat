@@ -16,10 +16,11 @@ echo Generating icon...
 ".venv\Scripts\python.exe" -c "from PIL import Image; Image.open('app/web/static/icon-512.png').save('mandom.ico', sizes=[(256,256),(128,128),(64,64),(48,48),(32,32),(16,16)])"
 
 echo Building...
-".venv\Scripts\pyinstaller.exe" --noconfirm --windowed --name Mandom --icon mandom.ico ^
+".venv\Scripts\python.exe" -m PyInstaller --noconfirm --windowed --name Mandom --icon mandom.ico ^
   --add-data "app/web/templates;app/web/templates" ^
   --add-data "app/web/static;app/web/static" ^
   --collect-all webview ^
+  --collect-submodules app ^
   desktop.py
 
 echo.
