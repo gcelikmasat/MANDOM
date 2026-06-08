@@ -190,7 +190,7 @@ the clean dark theme. To credit the artists, map filenames to handles in
 **`wallpapers/credits.json`**:
 
 ```json
-{ "jolyne.jpg": "springbloomed26", "yoruichi.jpg": "PRIxMAL786" }
+{ "wallpaper1.jpg": "credit1", "wallpaper2.jpg": "credit2" }
 ```
 
 The handle shows as a clickable **"art by @…"** at the bottom of each panel.
