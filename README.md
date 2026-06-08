@@ -2,8 +2,6 @@
 
 # 🩸 Mandom
 
-### *pull manga into your world*
-
 A personal manga **downloader, library, and reader** — browse and search
 [MangaDex](https://mangadex.org), bookmark your favourites and get told when
 new chapters drop, download chapters as **Kobo-ready EPUBs** (or CBZ), send them
