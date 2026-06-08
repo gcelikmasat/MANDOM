@@ -41,6 +41,45 @@ Runs as a **web app**, a **native desktop app**, *and* an **installable phone ap
 
 ---
 
+## 🧭 How to use it — step by step (no experience needed)
+
+### The simplest way: the ready-made app
+If someone gives you the **`Mandom`** folder (a zip):
+1. **Unzip** it anywhere (e.g. your Desktop).
+2. Open the folder and **double-click `Mandom.exe`**.
+3. Windows may say *"Windows protected your PC"* → click **More info → Run anyway** (this just means the app isn't signed; it's safe).
+4. The Mandom window opens. **That's it — skip to "Using the app" below.**
+
+### From the code (free, one-time setup)
+You only need to do this once.
+1. **Install Python.** Go to [python.org/downloads](https://www.python.org/downloads/), download **Python 3.13**, run the installer, and ✅ **check "Add Python to PATH"** on the first screen.
+2. **Download Mandom.** On the GitHub page click the green **Code** button → **Download ZIP**, then unzip it. (Or `git clone` if you know git.)
+3. **Open a terminal in that folder.** In File Explorer, click the address bar, type `cmd`, and press Enter.
+4. **Set it up** — copy-paste these one at a time:
+   ```powershell
+   py -3.13 -m venv .venv
+   .venv\Scripts\activate
+   pip install -e ".[web]"
+   ```
+5. **Start it** by double-clicking **`start-mandom.bat`** (or run `python run.py`). Your browser opens to the app.
+
+> Next time, you just double-click **`start-mandom.bat`** — no setup needed.
+
+### Using the app
+1. **Find manga.** Scroll the **Discover** grid (Popular / Latest / Top Rated), or type in the **search box**.
+2. **Save favourites.** Click the **☆ Bookmark** button on any manga — it turns into ★ and appears in your **Library**.
+3. **Check for new chapters.** On the **Library** page, click **↻ Update all** — manga with new chapters get a red **"N new"** badge.
+4. **Open a manga** to see its chapters. Each chapter has two buttons:
+   - **Read** — opens the in-app reader (click the right side of the page or press → for the next page).
+   - **⬇** — downloads that chapter. Or use **⬇ Download all**. Watch progress in the **Downloads** panel.
+5. **Find your files.** Downloaded chapters land in the **`downloads/`** folder, one folder per manga.
+6. **Put them on your Kobo.** Plug the Kobo in via USB, go to **Library**, and click **Send entire library → Kobo** (or **Send to Kobo** on a single manga).
+7. **Tweak things** in **Settings** (download folder, file format, etc.).
+
+*(First time only: to import your MangaDex follows, see [MangaDex account](#-mangadex-account-optional) below — it's optional.)*
+
+---
+
 ## 🧠 How it works
 
 Mandom talks to the **official MangaDex API** (`api.mangadex.org`) — no scraping,
@@ -209,6 +248,19 @@ In a container there's no OS keychain (secrets fall back to a file under `data/`
 Everything else works.
 
 ---
+
+## 🔒 Your data & privacy
+
+- **Everything stays on your machine.** Your library, downloads, and settings are
+  local files; Mandom has no analytics and phones home to nothing but MangaDex.
+- **Secrets are never stored in the project or in plaintext.** Your MangaDex
+  tokens live in your **OS keychain** (Windows Credential Manager); your account
+  **password is used once at sign-in and discarded**. The download DB and local
+  config are git-ignored, so they're never uploaded if you push the code.
+- **No login screen.** Run it on **localhost** (the default) and only you can
+  reach it. If you make it reachable from your phone, keep it on your **own
+  Wi-Fi or a private VPN (Tailscale)** — don't expose it to the public internet
+  without adding a password first.
 
 ## 🗂️ Project structure
 
