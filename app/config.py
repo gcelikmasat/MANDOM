@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import sys
 import tomllib
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 # Project root for writable data (downloads, db, wallpapers, config.toml).
@@ -54,9 +54,6 @@ class Config:
     # so 0002 < 0010 < 0100. Replaces the old manual rename script.
     filename_template: str = "{num_padded}_{manga}"
     number_padding: int = 4
-
-    # Bundling: per-chapter is the default; volume bundling is an optional toggle.
-    bundling: str = "chapter"  # "chapter" | "volume"
 
     # Export format(s) produced per chapter.
     #   "kepub" -> Kobo-optimized fixed-layout .kepub.epub (default; best on the Clara Colour)

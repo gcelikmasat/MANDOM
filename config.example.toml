@@ -12,9 +12,6 @@
 # filename_template = "{num_padded}_{manga}"
 # number_padding = 4
 
-# "chapter" (default, one book per chapter) or "volume".
-# bundling = "chapter"
-
 # Export format per chapter:
 #   "kepub" (default) -> Kobo-optimized fixed-layout .kepub.epub
 #   "cbz"             -> plain comic zip
